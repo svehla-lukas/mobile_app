@@ -7,5 +7,6 @@ module.exports = {
   printWidth: 100,
   tabWidth: 2,
   arrowParens: "avoid",
-  jsxSingleQuote: true
+  jsxSingleQuote: true,
+  endOfline: "lf",
 };

@@ -1,21 +1,15 @@
 import './index.css'
-// import { App2 } from './App2'
-// import App from './App'
-import { App3 } from './App3'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import Tap_game from './Tap_game'
 import reportWebVitals from './reportWebVitals'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 root.render(
   // <React.StrictMode>
-  // <App />
-  // <App2 />
   <>
-    <App3 />
-    {/* <App3 />
-    <App3 /> */}
+    <Tap_game />
   </>
   // </React.StrictMode>
 )
