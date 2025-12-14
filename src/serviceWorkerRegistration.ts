@@ -4,17 +4,12 @@
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
     window.location.hostname === '[::1]' ||
-    window.location.hostname.match(
-      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
-    )
+    window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
 )
 
 export const register = (): void => {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-    const publicUrl = new URL(
-      (process.env.PUBLIC_URL ?? ''),
-      window.location.href
-    )
+    const publicUrl = new URL(process.env.PUBLIC_URL ?? '', window.location.href)
 
     if (publicUrl.origin !== window.location.origin) {
       return
