@@ -3,6 +3,9 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import Tap_game from './Tap_game'
 import reportWebVitals from './reportWebVitals'
+import * as serviceWorkerRegistration from './serviceWorkerRegistration'
+
+serviceWorkerRegistration.register()
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
