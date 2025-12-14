@@ -1,7 +1,8 @@
 {
-  "name": "new-react-app",
+  "name": "mobile-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://svehl.github.io/mobile-app",
   "dependencies": {
     "@emotion/css": "^11.10.0",
     "@emotion/react": "^11.10.0",
@@ -31,8 +32,10 @@
     "test": "react-scripts test",
     "lint": "eslint \"{src,scripts}/**/*.{js,ts,tsx}\" --max-warnings 0",
     "lint:fix": "eslint \"{src,scripts}/**/*.{js,ts,tsx}\" --fix",
+    "deploy": "gh-pages -d build",
     "eject": "react-scripts eject"
-  },
+}
+
   "eslintConfig": {
     "extends": [
       "react-app",
