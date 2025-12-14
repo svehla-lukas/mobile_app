@@ -2,7 +2,7 @@
   "name": "mobile-app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://svehl.github.io/mobile-app",
+  "homepage": "https://svehl.github.io/mobile_app",
   "dependencies": {
     "@emotion/css": "^11.10.0",
     "@emotion/react": "^11.10.0",
@@ -35,7 +35,6 @@
     "deploy": "gh-pages -d build",
     "eject": "react-scripts eject"
   },
-
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -53,5 +52,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
   }
 }
