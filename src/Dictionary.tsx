@@ -229,16 +229,19 @@ const Dictionary = () => {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <h2>Švédština ⇄ Čeština</h2>
-
         <div style={styles.word}>
           <div style={styles.sv}>{current.sv}</div>
           {showTranslation && <div style={styles.cs}>{current.cs}</div>}
         </div>
 
         <div style={styles.buttons}>
-          <button onClick={() => applyAnswer('known')}>Vím</button>
-          <button onClick={() => applyAnswer('unknown')}>Nevím</button>
+          <button style={styles.button} onClick={() => applyAnswer('known')}>
+            Vím
+          </button>
+
+          <button style={styles.button} onClick={() => applyAnswer('unknown')}>
+            Nevím
+          </button>
         </div>
 
         <div style={styles.stats}>
@@ -261,14 +264,16 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    backgroundColor: '#dad2d2ff',
   },
   card: {
     width: '100%',
     maxWidth: 420,
-    border: '1px solid #ddd',
+    // border: '1px solid #ddd',
     borderRadius: 16,
     padding: 20,
     textAlign: 'center',
+    backgroundColor: '#dad2d2ff',
   },
   center: {
     minHeight: '100vh',
@@ -292,7 +297,15 @@ const styles: Record<string, React.CSSProperties> = {
   buttons: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: 12,
+    gap: 16, // 👈 mezera mezi tlačítky
+  },
+  button: {
+    minHeight: 88,
+    fontSize: 28,
+    gap: 30,
+    fontWeight: 900,
+    padding: '26px 20px',
+    borderRadius: 22,
   },
   stats: {
     marginTop: 16,
