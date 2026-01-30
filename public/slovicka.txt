@@ -1,0 +1,67 @@
+# B2 slovní zásoba CZ <> EN
+
+dosáhnout <> achieve
+přizpůsobit se <> adapt
+zvážit <> consider
+rozhodnout se <> decide
+zvládnout <> manage
+ovlivnit <> affect
+umožnit <> enable
+zahrnovat <> involve
+zlepšit <> improve
+zvýšit <> increase
+
+výhoda <> advantage
+nevýhoda <> disadvantage
+důkaz <> evidence
+výsledek <> outcome
+dopad <> impact
+přístup <> approach
+možnost <> opportunity
+odpovědnost <> responsibility
+riziko <> risk
+cíl <> goal
+
+zkušenost <> experience
+znalost <> knowledge
+dovednost <> skill
+schopnost <> ability
+sebedůvěra <> confidence
+motivace <> motivation
+tlak <> pressure
+stres <> stress
+rovnováha <> balance
+úspěch <> success
+
+společnost <> society
+prostředí <> environment
+ekonomika <> economy
+technologie <> technology
+výzkum <> research
+vývoj <> development
+inovace <> innovation
+udržitelnost <> sustainability
+politika <> politics
+kultura <> culture
+
+diskutovat <> discuss
+vysvětlit <> explain
+zdůraznit <> emphasize
+shrnout <> summarize
+porovnat <> compare
+analyzovat <> analyze
+hodnotit <> evaluate
+argumentovat <> argue
+přesvědčit <> persuade
+souhlasit <> agree
+
+nesouhlasit <> disagree
+navrhnout <> suggest
+odmítnout <> reject
+podporovat <> support
+kritizovat <> criticize
+vyřešit <> resolve
+vyjednávat <> negotiate
+spolupracovat <> cooperate
+ovlivňovat <> influence
+rozhodování <> decision-making
