@@ -16,8 +16,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Safe area insets for notch and home indicator on mobile */
-  padding: env(safe-area-inset-top) env(safe-area-inset-right)
-    env(safe-area-inset-bottom) env(safe-area-inset-left);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   box-sizing: border-box;
 }
 
@@ -31,4 +30,96 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Vocabulary app: portrait = buttons on top, landscape = lang buttons left, main centered */
+.vocab-card-inner {
+  display: block;
+}
+
+.vocab-main {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Word area: fixed height so buttons stay in place when word length changes */
+.vocab-word-block {
+  flex-shrink: 0;
+  min-height: 200px;
+  max-height: 45vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Buttons + stats: static block, does not move */
+.vocab-actions {
+  flex-shrink: 0;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (orientation: landscape) {
+  .vocab-card {
+    max-width: none !important;
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+  }
+
+  /* Language buttons left; main content absolutely centered on screen */
+  .vocab-card-inner {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    min-height: 200px;
+  }
+
+  .vocab-landscape-spacer {
+    display: none;
+  }
+
+  /* Language switch buttons on the left, stacked vertically */
+  .vocab-top-row {
+    flex-shrink: 0;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    margin-bottom: 0 !important;
+    margin-right: 16px !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+  }
+
+  /* Main content: absolutely centered in the viewport (true screen center) */
+  .vocab-main {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    max-width: 440px;
+    min-width: 0;
+  }
+
+  /* Main two buttons (Know / Don't know) – wider in landscape */
+  .vocab-main .vocab-main-buttons {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 100%;
+  }
 }

@@ -1,0 +1,34 @@
+# Swedish (2) <> Czech – second vocabulary, same language pair
+# Add your own words in format: czech <> swedish
+
+dopoledne <> förmiddag
+odpoledne <> eftermiddag
+večer <> kväll
+noc <> natt
+ráno <> morgon
+
+pondělí <> måndag
+úterý <> tisdag
+středa <> onsdag
+čtvrtek <> torsdag
+pátek <> fredag
+sobota <> lördag
+neděle <> söndag
+
+leden <> januari
+únor <> februari
+březen <> mars
+duben <> april
+květen <> maj
+červen <> juni
+červenec <> juli
+srpen <> augusti
+září <> september
+říjen <> oktober
+listopad <> november
+prosinec <> december
+
+jaro <> vår
+léto <> sommar
+podzim <> höst
+zima <> vinter
