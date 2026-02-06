@@ -1,0 +1,49 @@
+# Czech <> English vocabulary (format: czech <> english)
+# Add more lines as needed.
+
+tak akorát, vyváženě <> just right, balanced
+přestávka na kávu <> coffee break
+sladký smutek z pomíjivosti <> sweet sadness of transience
+měsíční odraz na vodě <> moon reflection on water
+oblíbené tajné místo <> favourite secret place
+mít energii něco dělat <> to have energy to do something
+samozřejmě <> of course
+partner, se kterým žiji <> partner I live with
+útulný, příjemný <> cosy, pleasant
+milý, příjemný <> nice, pleasant
+
+stud z létání <> shame of flying
+slepá ulice <> dead end
+věčný optimista ohledně času <> eternal optimist about time
+obývací pokoj <> living room
+sněhová bouře <> snow storm
+soumrak <> twilight
+úsvit <> dawn
+rychlá dešťová přeháňka <> quick rain shower
+
+člověk užívající si život <> person who enjoys life
+pomalý <> slow
+rychlý <> fast
+očekávání <> expectation
+zklamání <> disappointment
+v bezpečí, klidný <> safe, calm
+samota <> loneliness
+sounáležitost <> togetherness
+svoboda <> freedom
+odpovědnost <> responsibility
+
+trpělivost <> patience
+netrpělivý <> impatient
+zamilovaný <> in love
+láska <> love
+blízký přítel <> close friend
+přátelství <> friendship
+důvěra <> trust
+upřímnost <> honesty
+odvaha <> courage
+strach <> fear
+
+pocit <> feeling
+atmosféra <> atmosphere
+ticho <> silence
+klid <> calm
