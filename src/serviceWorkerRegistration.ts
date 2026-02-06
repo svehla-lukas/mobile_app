@@ -37,14 +37,17 @@ const registerValidSW = async (swUrl: string): Promise<void> => {
       installingWorker.onstatechange = () => {
         if (installingWorker.state === 'installed') {
           if (navigator.serviceWorker.controller) {
+            // eslint-disable-next-line no-console
             console.log('New content is available; please refresh.')
           } else {
+            // eslint-disable-next-line no-console
             console.log('Content is cached for offline use.')
           }
         }
       }
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error during service worker registration:', error)
   }
 }
@@ -66,6 +69,7 @@ const checkValidServiceWorker = async (swUrl: string): Promise<void> => {
       registerValidSW(swUrl)
     }
   } catch {
+    // eslint-disable-next-line no-console
     console.log('No internet connection found. App is running in offline mode.')
   }
 }
