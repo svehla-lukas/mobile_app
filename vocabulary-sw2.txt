@@ -1,34 +1,90 @@
-# Swedish (2) <> Czech – second vocabulary, same language pair
-# Add your own words in format: czech <> swedish
+# Swedish (2) <> Czech – hovorové, složitější a neobvyklé
+# Formát: česky <> švédsky
 
-dopoledne <> förmiddag
-odpoledne <> eftermiddag
-večer <> kväll
-noc <> natt
-ráno <> morgon
+být v pohodě, zvládnout to <> klara
+mít to za sebou, vyřídit <> fixa
+šmírovat, koukat <> kolla
+držet hubu <> håll käften
+nemít ani šajn <> inte ha en aning
+nemít páru <> inte ha en susning
+být naměkko <> vara mjuk i huvet
+mít to na háku <> ha koll på
+dát si pauzu <> ta en paus
+hodit to za hlavu <> släppa det
 
-pondělí <> måndag
-úterý <> tisdag
-středa <> onsdag
-čtvrtek <> torsdag
-pátek <> fredag
-sobota <> lördag
-neděle <> söndag
+říct to na rovinu <> säga som det är
+nemít nic společného <> inte ha med saken att göra
+nemít čas <> inte ha tid
+být na tom špatně <> vara ute efter
+dostat nápad <> få för sig
+být na vážkách <> sitta mellan två stolar
+mít to na háku <> ha koll
+udělat z toho vědu <> göra en höna av en fjäder
+nemít odvahu <> inte våga
+být z toho jelen <> inte förstå ett dugg
 
-leden <> januari
-únor <> februari
-březen <> mars
-duben <> april
-květen <> maj
-červen <> juni
-červenec <> juli
-srpen <> augusti
-září <> september
-říjen <> oktober
-listopad <> november
-prosinec <> december
+mít na kahánku <> ha det på gång
+být v obraze <> ha koll på läget
+hodit flintu do žita <> ge upp
+mít to v malíku <> ha det under kontroll
+nemít ani korunu <> inte ha en krona
+být bez groše <> vara pank
+mít kliku <> ha tur
+nemít štěstí <> ha otur
+být v sedmém nebi <> vara i sjunde himlen
+mít toho plné zuby <> vara less på
 
-jaro <> vår
-léto <> sommar
-podzim <> höst
-zima <> vinter
+držet se při zemi <> hålla sig till verkligheten
+chodit kolem horké kaše <> gå som katten kring het gröt
+být mezi nebem a zemí <> vara mellan himmel och jord
+mít hlavu v oblacích <> ha huvudet i molnen
+být z jiného těsta <> vara av annat virke
+padnout na ústa <> falla pladask
+být na koni <> sitta på det torra
+mít smůlu <> ha otur
+dostat za uši <> få skäll
+být v jednom kole <> vara i farten
+
+říct to bez obalu <> säga rakt på sak
+nemít slov <> inte ha ord
+být zticha <> hålla tyst
+nemít to zapotřebí <> inte behöva
+nemít na výběr <> inte ha något val
+být na vážkách <> tveka
+mít to za lubem <> ha något i bakhuvudet
+být z toho jelen <> vara förvirrad
+nemít tušení <> inte ha en aning
+být v tom jako v lese <> inte ha en aning
+
+hodit se do něčeho <> kasta sig in i något
+nemít čas nazbyt <> inte ha tid att förlora
+být na správné cestě <> vara på rätt spår
+mít to v krvi <> ha det i blodet
+nemít to v hlavě <> inte ha det i skallen
+být na mizině <> vara pank
+mít to na háku <> ha koll på
+nemít kde bydlet <> inte ha någonstans att bo
+být v tom sám <> vara ensam om det
+nemít od čeho žít <> inte ha något att leva på
+
+přijít na to <> komma underfund med
+nemít to zapotřebí <> inte behöva det
+být na správné adrese <> vara på rätt plats
+mít to za sebou <> ha det bakom sig
+nemít co ztratit <> inte ha något att förlora
+být na vahách <> tveka
+mít to v malíku <> ha det under kontroll
+nemít šanci <> inte ha en chans
+být v tom jako ryba ve vodě <> känna sig som fisken i vattnet
+nemít to v hlavě srovnané <> inte ha huvudet på skaft
+
+přijít na buben <> gå i konkurs
+nemít na zaplacení <> inte ha råd
+být na dně <> vara nere
+mít to v rukávu <> ha det i bakhuvudet
+nemít co na sebe <> inte ha något att ta på sig
+být na tahu <> vara tur
+nemít kam jít <> inte ha någonstans att gå
+mít to v malíku <> ha grepp om
+být v koncích <> vara ute efter
+nemít z čeho žít <> inte ha något att leva på
