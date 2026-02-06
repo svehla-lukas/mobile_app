@@ -28,7 +28,10 @@ type HistoryState = {
 /* ========================================================= */
 
 const STORAGE_KEY = 'sv-cs-trainer:v1'
+const DIRECTION_KEY = 'sv-cs-trainer:direction:v1'
 const REVEAL_DELAY_MS = 3000
+
+export type Direction = 'sv-cs' | 'cs-sv'
 
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n))
 
@@ -75,6 +78,15 @@ const saveHistory = (h: HistoryState) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(h))
 }
 
+const getStoredDirection = (): Direction => {
+  const v = localStorage.getItem(DIRECTION_KEY)
+  return v === 'cs-sv' ? 'cs-sv' : 'sv-cs'
+}
+
+const saveDirection = (d: Direction) => {
+  localStorage.setItem(DIRECTION_KEY, d)
+}
+
 const getWeight = (card: Card, stat?: Stat) => {
   if (!stat) return 3
   const base = 1
@@ -103,10 +115,16 @@ const Dictionary = () => {
   const [cards, setCards] = useState<Card[]>([])
   const [current, setCurrent] = useState<Card | null>(null)
   const [showTranslation, setShowTranslation] = useState(false)
+  const [direction, setDirection] = useState<Direction>(() => getStoredDirection())
 
   const [history, setHistory] = useState<HistoryState>(() => getInitialHistory())
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const handleDirectionChange = (d: Direction) => {
+    setDirection(d)
+    saveDirection(d)
+  }
 
   const revealTimerRef = useRef<number | null>(null)
 
@@ -226,12 +244,25 @@ const Dictionary = () => {
   if (error) return <div style={styles.center}>{error}</div>
   if (!current) return <div style={styles.center}>—</div>
 
+  const question = direction === 'sv-cs' ? current.sv : current.cs
+  const translation = direction === 'sv-cs' ? current.cs : current.sv
+
   return (
     <div style={styles.page}>
       <div style={styles.card}>
+        <div style={styles.directionRow}>
+          <button
+            type='button'
+            style={styles.directionBtn}
+            onClick={() => handleDirectionChange(direction === 'sv-cs' ? 'cs-sv' : 'sv-cs')}
+          >
+            {direction === 'sv-cs' ? 'SV → CS' : 'CS → SV'}
+          </button>
+        </div>
+
         <div style={styles.word}>
-          <div style={styles.sv}>{current.sv}</div>
-          {showTranslation && <div style={styles.cs}>{current.cs}</div>}
+          <div style={styles.sv}>{question}</div>
+          {showTranslation && <div style={styles.cs}>{translation}</div>}
         </div>
 
         <div style={styles.buttons}>
@@ -259,12 +290,13 @@ const Dictionary = () => {
 
 const styles: Record<string, React.CSSProperties> = {
   page: {
-    minHeight: '100vh',
+    minHeight: '100dvh',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
     backgroundColor: '#dad2d2ff',
+    boxSizing: 'border-box',
   },
   card: {
     width: '100%',
@@ -275,8 +307,28 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: 'center',
     backgroundColor: '#dad2d2ff',
   },
+  directionRow: {
+    display: 'flex',
+    gap: 12,
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  directionBtn: {
+    padding: '10px 20px',
+    fontSize: 16,
+    fontWeight: 600,
+    borderRadius: 12,
+    border: '2px solid #888',
+    backgroundColor: '#eee',
+    cursor: 'pointer',
+  },
+  directionBtnActive: {
+    backgroundColor: '#4a7c59',
+    color: '#fff',
+    borderColor: '#4a7c59',
+  },
   center: {
-    minHeight: '100vh',
+    minHeight: '100dvh',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -291,8 +343,10 @@ const styles: Record<string, React.CSSProperties> = {
   },
   cs: {
     marginTop: 10,
-    fontSize: 18,
-    opacity: 0.7,
+    fontSize: 24,
+    fontWeight: 700,
+    color: '#1a1a1a',
+    opacity: 1,
   },
   buttons: {
     display: 'grid',
@@ -311,6 +365,9 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: 16,
     display: 'flex',
     justifyContent: 'space-around',
+    fontSize: 20,
+    fontWeight: 700,
+    color: '#1a1a1a',
   },
 }
 
