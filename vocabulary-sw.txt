@@ -1,14 +1,15 @@
 # Czech <> Swedish – zajímavá a užitečná slovíčka
 # Formát: česky <> švédsky
 
+západ slunce  <>  nedgång
 tak akorát, vyváženě <> lagom
 přestávka na kávu (společenský rituál) <> fika
 sladký smutek z pomíjivosti <> vemod
 měsíční odraz na vodě <> mångata
 oblíbené tajné místo <> smultronställe
-mít energii něco dělat <> orka
+zvládat <> orka
 samozřejmě <> självklart
-partner, se kterým žiji (bez sňatku) <> sambo
+druh, družka <> sambo
 útulný, příjemný <> mysig
 milý, příjemný <> trevlig
 
