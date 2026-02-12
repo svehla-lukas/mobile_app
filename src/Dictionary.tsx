@@ -34,7 +34,7 @@ export type DictionaryLang = 'sv' | 'sv2' | 'en'
 const STORAGE_KEY = 'vocab-trainer:v1'
 const DIRECTION_KEY = 'vocab-trainer:direction:v1'
 const DICTIONARY_KEY = 'vocab-trainer:dictionary:v1'
-const REVEAL_DELAY_MS = 3000
+const REVEAL_DELAY_MS = 2000
 
 const DICTIONARY_FILES: Record<DictionaryLang, string> = {
   sv: 'vocabulary-sw.txt',
@@ -217,33 +217,46 @@ const Dictionary = () => {
     (answer: 'known' | 'unknown') => {
       if (!current) return
 
-      setShowTranslation(true)
-      const statKey = getStatKey(dictionaryLang, current.id)
-      const prev = history.statsById[statKey] ?? { seen: 0, known: 0, unknown: 0 }
+      // Definujeme logiku pro posun na další kartu jako samostatnou funkci
+      const proceedToNext = () => {
+        const statKey = getStatKey(dictionaryLang, current.id)
+        const prev = history.statsById[statKey] ?? { seen: 0, known: 0, unknown: 0 }
 
-      const nextStat: Stat = {
-        seen: prev.seen + 1,
-        known: prev.known + (answer === 'known' ? 1 : 0),
-        unknown: prev.unknown + (answer === 'unknown' ? 1 : 0),
-        lastAnswerAt: Date.now(),
+        const nextStat: Stat = {
+          seen: prev.seen + 1,
+          known: prev.known + (answer === 'known' ? 1 : 0),
+          unknown: prev.unknown + (answer === 'unknown' ? 1 : 0),
+          lastAnswerAt: Date.now(),
+        }
+
+        const nextHistory: HistoryState = {
+          ...history,
+          statsById: { ...history.statsById, [statKey]: nextStat },
+          lastSessionAt: Date.now(),
+          totalAnswers: history.totalAnswers + 1,
+        }
+
+        setHistory(nextHistory)
+        saveHistory(nextHistory)
+
+        const next = pickNext()
+        clearRevealTimer()
+        setShowTranslation(false) // Skryjeme překlad pro novou kartu
+        setCurrent(next)
+
+        if (next) startRevealTimer()
       }
 
-      const nextHistory: HistoryState = {
-        ...history,
-        statsById: { ...history.statsById, [statKey]: nextStat },
-        lastSessionAt: Date.now(),
-        totalAnswers: history.totalAnswers + 1,
+      // FEATURE: Pokud vím, ukaž překlad na 500ms, pak jdi dál
+      if (answer === 'known') {
+        setShowTranslation(true)
+        setTimeout(() => {
+          proceedToNext()
+        }, 500)
+      } else {
+        setShowTranslation(true)
+        proceedToNext()
       }
-
-      setHistory(nextHistory)
-      saveHistory(nextHistory)
-
-      const next = pickNext()
-      clearRevealTimer()
-      setShowTranslation(false)
-      setCurrent(next)
-
-      if (next) startRevealTimer()
     },
     [current, dictionaryLang, history, pickNext, clearRevealTimer, startRevealTimer]
   )
