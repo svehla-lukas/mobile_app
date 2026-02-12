@@ -247,17 +247,15 @@ const Dictionary = () => {
         if (next) startRevealTimer()
       }
 
-      // FEATURE: Pokud vím, ukaž překlad na 1000ms, pak jdi dál
+      // FEATURE: Pokud vím, ukaž překlad na 500ms, pak jdi dál
       if (answer === 'known') {
-        // Pokud vím, ukaž překlad na 0.5s (nebo 1s podle tvého uvážení)
-        setTimeout(() => {
-          proceedToNext()
-        }, 500)
-      } else if (answer === 'unknown') {
-        // FEATURE: Pokud nevím (Don't know), ukaž překlad na 1 vteřinu, pak jdi dál
+        setShowTranslation(true)
         setTimeout(() => {
           proceedToNext()
         }, 1000)
+      } else {
+        setShowTranslation(true)
+        proceedToNext()
       }
     },
     [current, dictionaryLang, history, pickNext, clearRevealTimer, startRevealTimer]
