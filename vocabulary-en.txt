@@ -1,49 +1,98 @@
-# Czech <> English vocabulary (format: czech <> english)
-# Add more lines as needed.
-
-tak akorát, vyváženě <> just right, balanced
-přestávka na kávu <> coffee break
-sladký smutek z pomíjivosti <> sweet sadness of transience
-měsíční odraz na vodě <> moon reflection on water
-oblíbené tajné místo <> favourite secret place
-mít energii něco dělat <> to have energy to do something
-samozřejmě <> of course
-partner, se kterým žiji <> partner I live with
-útulný, příjemný <> cosy, pleasant
-milý, příjemný <> nice, pleasant
-
-stud z létání <> shame of flying
-slepá ulice <> dead end
-věčný optimista ohledně času <> eternal optimist about time
-obývací pokoj <> living room
-sněhová bouře <> snow storm
-soumrak <> twilight
-úsvit <> dawn
-rychlá dešťová přeháňka <> quick rain shower
-
-člověk užívající si život <> person who enjoys life
-pomalý <> slow
-rychlý <> fast
-očekávání <> expectation
-zklamání <> disappointment
-v bezpečí, klidný <> safe, calm
-samota <> loneliness
-sounáležitost <> togetherness
-svoboda <> freedom
-odpovědnost <> responsibility
-
-trpělivost <> patience
-netrpělivý <> impatient
-zamilovaný <> in love
-láska <> love
-blízký přítel <> close friend
-přátelství <> friendship
-důvěra <> trust
-upřímnost <> honesty
-odvaha <> courage
-strach <> fear
-
-pocit <> feeling
-atmosféra <> atmosphere
-ticho <> silence
-klid <> calm
+Abbreviation <> zkratka (složená z počátečních písmen)
+Alley <> ulička
+Anniversary <> výročí
+Arrangement <> uspořádání / dohoda
+Avenue <> třída (široká ulice, často se stromy)
+Bond <> pouto / provázání
+Bottom <> dno / spodek
+Breath <> dech (podstatné jméno)
+Choice <> výběr
+Competitors <> konkurence
+Decision <> rozhodnutí
+Dusk <> soumrak
+Dawn <> rozbřesk
+Evidence <> důkaz
+Fence <> plot
+Flaws <> nedostatky / chyby
+Forecast <> předpověď
+Gain <> zisk
+Importance <> důležitost
+Infant <> kojenec
+Intention <> úmysl
+Matter <> hmota / záležitost
+Mind <> vědomí / mysl
+Moderation <> umírněnost
+Mould <> plíseň
+Pain <> bolest
+Petri dish <> Petriho miska
+Policy <> politika / zásady
+Possibility <> možnost
+Puppies <> štěňata
+Saliva <> slina
+Scheme <> plán / schéma / strategie
+Siblings <> sourozenci
+Sourdough <> kvásek / kynuté těsto
+Street <> ulice
+Syllabus <> osnova
+Tomcat <> kocour
+Virtue <> ctnost
+Vowel <> samohláska
+Aware <> vědomý si (čeho)
+Bitter <> hořký
+Broad / Broader <> široký / širší
+Crucial <> zásadní / klíčový
+Demanding <> náročný
+Different <> jiný / rozdílný
+Essential <> nezbytný / nutný
+Familiar <> obeznámený / známý
+Honest <> upřímný / poctivý
+Ripe <> zralý
+Short form <> zkrácený tvar
+Stuck <> zaseknutý
+Wishful <> plný přání / toužebný
+Worse <> horší (v poznámkách máš "nejhorší", to je worst)
+Bathe <> koupat (se)
+Bear <> nést
+Believe <> věřit
+Breathe <> dýchat (sloveso)
+Build (Built, Built) <> stavět
+Buy (Bought, Bought) <> koupit
+Climb the trees <> lézt na stromy
+Come (Came, Come) <> přijít
+Cross <> křížit / přeškrtnout
+Depend on <> záviset na
+Drench <> namočit / promáčet
+Drool <> slintat
+Eat (Ate, Eaten) <> jíst
+Encounter <> setkat se / narazit na
+Harm <> poškodit / ublížit
+Hope <> doufat
+Joke <> žertovat
+Know (Knew, Known) <> vědět
+Occur <> nastat / vyskytnout se
+Prepare <> připravit (se)
+Ride a bike <> jet na kole
+Scratch <> škrábat
+Sleep (Slept, Slept) <> spát
+Smile <> usmát se
+Speak (Spoke, Spoken) <> mluvit
+Take care of <> starat se o
+Understand (Understood) <> rozumět
+As a child <> jako dítě (když jsem jím byl)
+Blind alley / Dead-end <> slepá ulice
+Bred from <> vyšlechtěný z
+Get stuck in traffic <> zaseknout se v zácpě
+Good thing <> dobrá věc / je dobře, že
+Grip on (something) <> pochopit / ovládnout (v poznámkách: "udělat to dobře")
+I am afraid / I guess <> obávám se / hádám
+I’m familiar with something <> jsem s něčím obeznámen
+It might be <> mohlo by to být
+Kick the bucket <> natáhnout bačkory (zemřít)
+Like a child <> jako dítě (přirovnání – chová se tak)
+My mouth is watering <> sbíhají se mi sliny
+On the contrary <> naopak
+Pull sledges <> tahat sáně
+Sound / Hear <> znít / slyšet
+Spot on <> naprosto přesné / trefné
+Taste funny <> chutnat divně
+We should <> měli bychom
