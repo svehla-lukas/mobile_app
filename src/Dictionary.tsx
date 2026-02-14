@@ -44,8 +44,10 @@ const parseTxt = (txt: string): Card[] =>
 const Dictionary = (): JSX.Element => {
   const [cards, setCards] = useState<Card[]>([])
   const [dictionary, setDictionary] = useState<DictionaryLang>('sv')
+
   const [kochIndex, setKochIndex] = useState<number>(KOCH_START)
   const [answers, setAnswers] = useState<boolean[]>([])
+
   const [intervalSec, setIntervalSec] = useState<number>(3)
   const [current, setCurrent] = useState<Card | null>(null)
   const [showTranslation, setShowTranslation] = useState<boolean>(false)
@@ -53,10 +55,7 @@ const Dictionary = (): JSX.Element => {
   const intervalRef = useRef<number | null>(null)
   const revealRef = useRef<number | null>(null)
 
-  const activeCards = useMemo(
-    () => cards.slice(0, kochIndex),
-    [cards, kochIndex]
-  )
+  const activeCards = useMemo(() => cards.slice(0, kochIndex), [cards, kochIndex])
 
   const pickRandom = (): Card | null => {
     if (activeCards.length === 0) return null
@@ -99,22 +98,32 @@ const Dictionary = (): JSX.Element => {
     nextWord()
   }
 
-  /* Load dictionary */
+  const switchDictionary = (next: DictionaryLang): void => {
+    if (next === dictionary) return
+
+    // Stop timers immediately
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (revealRef.current) clearTimeout(revealRef.current)
+
+    // Reset Koch state (NOT in effect → lint ok)
+    setDictionary(next)
+    setKochIndex(KOCH_START)
+    setAnswers([])
+    setCurrent(null)
+    setShowTranslation(false)
+  }
+
+  /* Load dictionary on change */
   useEffect(() => {
     const load = async (): Promise<void> => {
       const txt = await loadTxtFromPublic(DICTIONARY_FILES[dictionary])
       setCards(parseTxt(txt))
     }
+
     load()
   }, [dictionary])
 
-  /* Reset Koch při změně databáze */
-  useEffect(() => {
-    setKochIndex(KOCH_START)
-    setAnswers([])
-  }, [cards])
-
-  /* Word switching */
+  /* Word switching (lint-safe: no sync setState in effect body) */
   useEffect(() => {
     if (activeCards.length === 0) return
 
@@ -124,10 +133,9 @@ const Dictionary = (): JSX.Element => {
 
     if (intervalRef.current) clearInterval(intervalRef.current)
 
-    intervalRef.current = window.setInterval(
-      nextWord,
-      intervalSec * 1000
-    )
+    intervalRef.current = window.setInterval(() => {
+      nextWord()
+    }, intervalSec * 1000)
 
     return () => {
       cancelAnimationFrame(raf)
@@ -144,25 +152,15 @@ const Dictionary = (): JSX.Element => {
     <div style={styles.container}>
       <div style={styles.wordBlock}>
         <div style={styles.word}>{current.other}</div>
-        <div style={styles.translation}>
-          {showTranslation ? current.cs : ''}
-        </div>
+        <div style={styles.translation}>{showTranslation ? current.cs : ''}</div>
       </div>
 
       <div style={styles.buttons}>
-        <button
-          type='button'
-          style={styles.good}
-          onClick={() => applyAnswer(true)}
-        >
+        <button type='button' style={styles.good} onClick={() => applyAnswer(true)}>
           I knew it
         </button>
 
-        <button
-          type='button'
-          style={styles.bad}
-          onClick={() => applyAnswer(false)}
-        >
+        <button type='button' style={styles.bad} onClick={() => applyAnswer(false)}>
           Missed
         </button>
       </div>
@@ -177,19 +175,17 @@ const Dictionary = (): JSX.Element => {
           onChange={e => setIntervalSec(Number(e.target.value))}
           style={styles.slider}
         />
-        <div style={styles.label}>
-          Speed: {intervalSec}s
-        </div>
+        <div style={styles.label}>Speed: {intervalSec}s</div>
       </div>
 
       <div style={styles.dbButtons}>
-        <button type='button' onClick={() => setDictionary('sv')}>
+        <button type='button' onClick={() => switchDictionary('sv')}>
           SV
         </button>
-        <button type='button' onClick={() => setDictionary('sv2')}>
+        <button type='button' onClick={() => switchDictionary('sv2')}>
           SV2
         </button>
-        <button type='button' onClick={() => setDictionary('en')}>
+        <button type='button' onClick={() => switchDictionary('en')}>
           EN
         </button>
       </div>
