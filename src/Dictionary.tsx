@@ -6,7 +6,13 @@ type Card = {
   other: string
 }
 
-const DICTIONARY_FILE = 'vocabulary-sw.txt'
+type DictionaryLang = 'sv' | 'sv2' | 'en'
+
+const DICTIONARY_FILES: Record<DictionaryLang, string> = {
+  sv: 'vocabulary-sw.txt',
+  sv2: 'vocabulary-sw2.txt',
+  en: 'vocabulary-en.txt',
+}
 
 const KOCH_START = 2
 const KOCH_WINDOW = 20
@@ -37,6 +43,7 @@ const parseTxt = (txt: string): Card[] =>
 
 const Dictionary = (): JSX.Element => {
   const [cards, setCards] = useState<Card[]>([])
+  const [dictionary, setDictionary] = useState<DictionaryLang>('sv')
   const [kochIndex, setKochIndex] = useState<number>(KOCH_START)
   const [answers, setAnswers] = useState<boolean[]>([])
   const [intervalSec, setIntervalSec] = useState<number>(3)
@@ -78,27 +85,36 @@ const Dictionary = (): JSX.Element => {
 
   const applyAnswer = (correct: boolean): void => {
     const updated = [...answers, correct].slice(-KOCH_WINDOW)
-    setAnswers(updated)
 
     if (evaluateProgress(updated)) {
       if (kochIndex < cards.length) {
         setKochIndex(prev => prev + 1)
+        setAnswers([]) // reset po level up
+        nextWord()
+        return
       }
     }
 
+    setAnswers(updated)
     nextWord()
   }
 
   /* Load dictionary */
   useEffect(() => {
     const load = async (): Promise<void> => {
-      const txt = await loadTxtFromPublic(DICTIONARY_FILE)
+      const txt = await loadTxtFromPublic(DICTIONARY_FILES[dictionary])
       setCards(parseTxt(txt))
     }
     load()
-  }, [])
+  }, [dictionary])
 
-  /* Word switching (FIXED - no sync setState) */
+  /* Reset Koch při změně databáze */
+  useEffect(() => {
+    setKochIndex(KOCH_START)
+    setAnswers([])
+  }, [cards])
+
+  /* Word switching */
   useEffect(() => {
     if (activeCards.length === 0) return
 
@@ -166,6 +182,18 @@ const Dictionary = (): JSX.Element => {
         </div>
       </div>
 
+      <div style={styles.dbButtons}>
+        <button type='button' onClick={() => setDictionary('sv')}>
+          SV
+        </button>
+        <button type='button' onClick={() => setDictionary('sv2')}>
+          SV2
+        </button>
+        <button type='button' onClick={() => setDictionary('en')}>
+          EN
+        </button>
+      </div>
+
       <div style={styles.level}>
         Koch level: {kochIndex} / {cards.length}
       </div>
@@ -228,6 +256,11 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: 8,
     fontSize: 14,
     opacity: 0.6,
+  },
+  dbButtons: {
+    display: 'flex',
+    gap: 8,
+    marginTop: 20,
   },
   level: {
     marginTop: 20,
