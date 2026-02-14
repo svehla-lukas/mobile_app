@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 /* ========================================================= */
 /* Types                                                     */
@@ -10,8 +10,7 @@ type Card = {
   other: string
 }
 
-export type Direction = 'lang2-cs' | 'cs-lang2'
-export type DictionaryLang = 'sv' | 'sv2' | 'en'
+type DictionaryLang = 'sv' | 'sv2' | 'en'
 
 type KochState = {
   kochIndexByDict: Record<DictionaryLang, number>
@@ -22,10 +21,7 @@ type KochState = {
 /* Constants                                                 */
 /* ========================================================= */
 
-const STORAGE_KEY = 'vocab-trainer:koch:v2'
-const DIRECTION_KEY = 'vocab-trainer:direction:v1'
-const DICTIONARY_KEY = 'vocab-trainer:dictionary:v1'
-
+const STORAGE_KEY = 'vocab-trainer:koch:v3'
 const REVEAL_DELAY_MS = 2000
 const KOCH_START_SIZE = 2
 const KOCH_THRESHOLD = 0.85
@@ -41,10 +37,12 @@ const DICTIONARY_FILES: Record<DictionaryLang, string> = {
 /* Utils                                                     */
 /* ========================================================= */
 
-const loadTxtFromPublic = async (path: string) => {
+const loadTxtFromPublic = async (path: string): Promise<string> => {
   const base = process.env.PUBLIC_URL || ''
   const res = await fetch(`${base}/${path}`)
-  if (!res.ok) throw new Error(`Failed to load ${path}`)
+  if (!res.ok) {
+    throw new Error(`Failed to load ${path}`)
+  }
   return res.text()
 }
 
@@ -57,24 +55,12 @@ const parseTxt = (txt: string): Card[] =>
       const parts = line.split('<>')
       if (parts.length < 2) return null
       return {
-        id: `${i}`,
+        id: String(i),
         cs: parts[0].trim(),
         other: parts.slice(1).join('<>').trim(),
       }
     })
-    .filter(Boolean) as Card[]
-
-const getStoredDirection = (): Direction =>
-  localStorage.getItem(DIRECTION_KEY) === 'cs-lang2'
-    ? 'cs-lang2'
-    : 'lang2-cs'
-
-const getStoredDictionary = (): DictionaryLang => {
-  const v = localStorage.getItem(DICTIONARY_KEY)
-  if (v === 'en') return 'en'
-  if (v === 'sv2') return 'sv2'
-  return 'sv'
-}
+    .filter((x): x is Card => x !== null)
 
 const loadKochState = (): KochState => {
   const raw = localStorage.getItem(STORAGE_KEY)
@@ -84,11 +70,12 @@ const loadKochState = (): KochState => {
       recentAnswersByDict: { sv: [], sv2: [], en: [] },
     }
   }
-  return JSON.parse(raw)
+  return JSON.parse(raw) as KochState
 }
 
-const saveKochState = (s: KochState) =>
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(s))
+const saveKochState = (state: KochState): void => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+}
 
 /* ========================================================= */
 /* Component                                                 */
@@ -99,11 +86,7 @@ const Dictionary = () => {
   const [cardsSv2, setCardsSv2] = useState<Card[]>([])
   const [cardsEn, setCardsEn] = useState<Card[]>([])
 
-  const [dictionaryLang, setDictionaryLang] =
-    useState<DictionaryLang>(() => getStoredDictionary())
-
-  const [direction] =
-    useState<Direction>(() => getStoredDirection())
+  const [dictionaryLang] = useState<DictionaryLang>('sv')
 
   const [kochState, setKochState] =
     useState<KochState>(() => loadKochState())
@@ -130,22 +113,13 @@ const Dictionary = () => {
     [currentCards, kochIndex]
   )
 
-  const pickRandom = useCallback(() => {
+  const pickRandom = (): Card | null => {
     if (activeCards.length === 0) return null
     const i = Math.floor(Math.random() * activeCards.length)
     return activeCards[i]
-  }, [activeCards])
+  }
 
-  const startRevealTimer = useCallback(() => {
-    if (revealTimerRef.current)
-      window.clearTimeout(revealTimerRef.current)
-
-    revealTimerRef.current = window.setTimeout(() => {
-      setShowTranslation(true)
-    }, REVEAL_DELAY_MS)
-  }, [])
-
-  const evaluateProgress = (answers: boolean[]) => {
+  const evaluateProgress = (answers: boolean[]): boolean => {
     if (answers.length < KOCH_WINDOW) return false
     const recent = answers.slice(-KOCH_WINDOW)
     const success =
@@ -153,7 +127,7 @@ const Dictionary = () => {
     return success >= KOCH_THRESHOLD
   }
 
-  const applyAnswer = (known: boolean) => {
+  const applyAnswer = (known: boolean): void => {
     if (!current) return
 
     const prevAnswers =
@@ -161,18 +135,18 @@ const Dictionary = () => {
 
     const updatedAnswers = [...prevAnswers, known]
 
-    let updatedKochIndex = kochIndex
+    let updatedIndex = kochIndex
 
     if (evaluateProgress(updatedAnswers)) {
       if (kochIndex < currentCards.length) {
-        updatedKochIndex = kochIndex + 1
+        updatedIndex = kochIndex + 1
       }
     }
 
     const newState: KochState = {
       kochIndexByDict: {
         ...kochState.kochIndexByDict,
-        [dictionaryLang]: updatedKochIndex,
+        [dictionaryLang]: updatedIndex,
       },
       recentAnswersByDict: {
         ...kochState.recentAnswersByDict,
@@ -186,7 +160,6 @@ const Dictionary = () => {
     const next = pickRandom()
     setShowTranslation(false)
     setCurrent(next)
-    startRevealTimer()
   }
 
   /* ========================================================= */
@@ -210,7 +183,7 @@ const Dictionary = () => {
   }, [])
 
   /* ========================================================= */
-  /* Initial card selection (lint-safe)                       */
+  /* Initial card selection                                   */
   /* ========================================================= */
 
   useEffect(() => {
@@ -220,27 +193,42 @@ const Dictionary = () => {
       const next = pickRandom()
       setCurrent(next)
       setShowTranslation(false)
-      startRevealTimer()
     })
 
     return () => cancelAnimationFrame(id)
-  }, [activeCards, pickRandom, startRevealTimer])
+  }, [activeCards])
 
   /* ========================================================= */
 
-  if (!current) return <div style={{ padding: 40 }}>Loading…</div>
+  useEffect(() => {
+    if (!current) return
 
-  const question =
-    direction === 'lang2-cs' ? current.other : current.cs
+    if (revealTimerRef.current) {
+      clearTimeout(revealTimerRef.current)
+    }
 
-  const translation =
-    direction === 'lang2-cs' ? current.cs : current.other
+    revealTimerRef.current = window.setTimeout(() => {
+      setShowTranslation(true)
+    }, REVEAL_DELAY_MS)
+
+    return () => {
+      if (revealTimerRef.current) {
+        clearTimeout(revealTimerRef.current)
+      }
+    }
+  }, [current])
+
+  /* ========================================================= */
+
+  if (!current) {
+    return <div style={{ padding: 40 }}>Loading…</div>
+  }
 
   return (
     <div style={{ textAlign: 'center', padding: 40 }}>
-      <h1>{question}</h1>
+      <h1>{current.other}</h1>
 
-      {showTranslation && <h2>{translation}</h2>}
+      {showTranslation && <h2>{current.cs}</h2>}
 
       <div style={{ marginTop: 30 }}>
         <button onClick={() => applyAnswer(true)}>
@@ -248,7 +236,7 @@ const Dictionary = () => {
         </button>
 
         <button onClick={() => applyAnswer(false)}>
-          Don’t know
+          Don&apos;t know
         </button>
       </div>
 
