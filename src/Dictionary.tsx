@@ -7,6 +7,7 @@ type Card = {
 }
 
 type DictionaryLang = 'sv' | 'sv2' | 'en'
+type Direction = 'other-cs' | 'cs-other'
 
 const DICTIONARY_FILES: Record<DictionaryLang, string> = {
   sv: 'vocabulary-sw.txt',
@@ -44,6 +45,7 @@ const parseTxt = (txt: string): Card[] =>
 const Dictionary = (): JSX.Element => {
   const [cards, setCards] = useState<Card[]>([])
   const [dictionary, setDictionary] = useState<DictionaryLang>('sv')
+  const [direction, setDirection] = useState<Direction>('other-cs')
 
   const [kochIndex, setKochIndex] = useState<number>(KOCH_START)
   const [answers, setAnswers] = useState<boolean[]>([])
@@ -88,7 +90,7 @@ const Dictionary = (): JSX.Element => {
     if (evaluateProgress(updated)) {
       if (kochIndex < cards.length) {
         setKochIndex(prev => prev + 1)
-        setAnswers([]) // reset po level up
+        setAnswers([])
         nextWord()
         return
       }
@@ -99,31 +101,35 @@ const Dictionary = (): JSX.Element => {
   }
 
   const switchDictionary = (next: DictionaryLang): void => {
-    if (next === dictionary) return
+    if (next === dictionary) {
+      // Přepnutí směru jazyka
+      setDirection(prev =>
+        prev === 'other-cs' ? 'cs-other' : 'other-cs'
+      )
+      return
+    }
 
-    // Stop timers immediately
     if (intervalRef.current) clearInterval(intervalRef.current)
     if (revealRef.current) clearTimeout(revealRef.current)
 
-    // Reset Koch state (NOT in effect → lint ok)
     setDictionary(next)
+    setDirection('other-cs')
     setKochIndex(KOCH_START)
     setAnswers([])
     setCurrent(null)
     setShowTranslation(false)
   }
 
-  /* Load dictionary on change */
+  /* Load dictionary */
   useEffect(() => {
     const load = async (): Promise<void> => {
       const txt = await loadTxtFromPublic(DICTIONARY_FILES[dictionary])
       setCards(parseTxt(txt))
     }
-
     load()
   }, [dictionary])
 
-  /* Word switching (lint-safe: no sync setState in effect body) */
+  /* Word switching */
   useEffect(() => {
     if (activeCards.length === 0) return
 
@@ -148,18 +154,25 @@ const Dictionary = (): JSX.Element => {
     return <div style={styles.loading}>Loading...</div>
   }
 
+  const question =
+    direction === 'other-cs' ? current.other : current.cs
+
+  const translation =
+    direction === 'other-cs' ? current.cs : current.other
+
   return (
     <div style={styles.container}>
       <div style={styles.wordBlock}>
-        <div style={styles.word}>{current.other}</div>
-        <div style={styles.translation}>{showTranslation ? current.cs : ''}</div>
+        <div style={styles.word}>{question}</div>
+        <div style={styles.translation}>
+          {showTranslation ? translation : ''}
+        </div>
       </div>
 
       <div style={styles.buttons}>
         <button type='button' style={styles.good} onClick={() => applyAnswer(true)}>
           I knew it
         </button>
-
         <button type='button' style={styles.bad} onClick={() => applyAnswer(false)}>
           Missed
         </button>
