@@ -6,14 +6,11 @@ type Card = {
   other: string
 }
 
-type DictionaryLang = 'sv' | 'sv2' | 'en'
-type Direction = 'other-cs' | 'cs-other'
+const DICTIONARY_FILE = 'vocabulary-sw.txt'
 
-const DICTIONARY_FILES: Record<DictionaryLang, string> = {
-  sv: 'vocabulary-sw.txt',
-  sv2: 'vocabulary-sw2.txt',
-  en: 'vocabulary-en.txt',
-}
+const KOCH_START = 2
+const KOCH_WINDOW = 20
+const KOCH_THRESHOLD = 0.85
 
 const loadTxtFromPublic = async (path: string): Promise<string> => {
   const base = process.env.PUBLIC_URL || ''
@@ -40,52 +37,77 @@ const parseTxt = (txt: string): Card[] =>
 
 const Dictionary = (): JSX.Element => {
   const [cards, setCards] = useState<Card[]>([])
-  const [dictionary, setDictionary] = useState<DictionaryLang>('sv')
-  const [direction, setDirection] = useState<Direction>('other-cs')
+  const [kochIndex, setKochIndex] = useState<number>(KOCH_START)
+  const [answers, setAnswers] = useState<boolean[]>([])
   const [intervalSec, setIntervalSec] = useState<number>(3)
   const [current, setCurrent] = useState<Card | null>(null)
-  const [showTranslation, setShowTranslation] = useState(false)
+  const [showTranslation, setShowTranslation] = useState<boolean>(false)
 
   const intervalRef = useRef<number | null>(null)
   const revealRef = useRef<number | null>(null)
 
+  const activeCards = useMemo(
+    () => cards.slice(0, kochIndex),
+    [cards, kochIndex]
+  )
+
   const pickRandom = (): Card | null => {
-    if (cards.length === 0) return null
-    const index = Math.floor(Math.random() * cards.length)
-    return cards[index]
+    if (activeCards.length === 0) return null
+    const index = Math.floor(Math.random() * activeCards.length)
+    return activeCards[index]
+  }
+
+  const evaluateProgress = (list: boolean[]): boolean => {
+    if (list.length < KOCH_WINDOW) return false
+    const recent = list.slice(-KOCH_WINDOW)
+    const success = recent.filter(a => a).length / KOCH_WINDOW
+    return success >= KOCH_THRESHOLD
+  }
+
+  const nextWord = (): void => {
+    const next = pickRandom()
+    setCurrent(next)
+    setShowTranslation(false)
+
+    if (revealRef.current) clearTimeout(revealRef.current)
+
+    revealRef.current = window.setTimeout(() => {
+      setShowTranslation(true)
+    }, (intervalSec * 1000) / 2)
+  }
+
+  const applyAnswer = (correct: boolean): void => {
+    const updated = [...answers, correct].slice(-KOCH_WINDOW)
+    setAnswers(updated)
+
+    if (evaluateProgress(updated)) {
+      if (kochIndex < cards.length) {
+        setKochIndex(kochIndex + 1)
+      }
+    }
+
+    nextWord()
   }
 
   /* Load dictionary */
   useEffect(() => {
     const load = async (): Promise<void> => {
-      const txt = await loadTxtFromPublic(DICTIONARY_FILES[dictionary])
+      const txt = await loadTxtFromPublic(DICTIONARY_FILE)
       setCards(parseTxt(txt))
     }
     load()
-  }, [dictionary])
+  }, [])
 
-  /* Word switching logic */
+  /* Word switching */
   useEffect(() => {
-    if (cards.length === 0) return
+    if (activeCards.length === 0) return
 
-    const changeWord = () => {
-      const next = pickRandom()
-      setCurrent(next)
-      setShowTranslation(false)
-
-      if (revealRef.current) clearTimeout(revealRef.current)
-
-      revealRef.current = window.setTimeout(() => {
-        setShowTranslation(true)
-      }, (intervalSec * 1000) / 2)
-    }
-
-    changeWord()
+    nextWord()
 
     if (intervalRef.current) clearInterval(intervalRef.current)
 
     intervalRef.current = window.setInterval(
-      changeWord,
+      nextWord,
       intervalSec * 1000
     )
 
@@ -93,13 +115,7 @@ const Dictionary = (): JSX.Element => {
       if (intervalRef.current) clearInterval(intervalRef.current)
       if (revealRef.current) clearTimeout(revealRef.current)
     }
-  }, [cards, intervalSec])
-
-  const question =
-    direction === 'other-cs' ? current?.other : current?.cs
-
-  const translation =
-    direction === 'other-cs' ? current?.cs : current?.other
+  }, [activeCards, intervalSec])
 
   if (!current) {
     return <div style={styles.loading}>Loading...</div>
@@ -108,41 +124,27 @@ const Dictionary = (): JSX.Element => {
   return (
     <div style={styles.container}>
       <div style={styles.wordBlock}>
-        <div style={styles.word}>{question}</div>
+        <div style={styles.word}>{current.other}</div>
         <div style={styles.translation}>
-          {showTranslation ? translation : ''}
+          {showTranslation ? current.cs : ''}
         </div>
       </div>
 
-      <div style={styles.controls}>
+      <div style={styles.buttons}>
         <button
           type='button'
-          style={styles.button}
-          onClick={() =>
-            setDirection(
-              direction === 'other-cs'
-                ? 'cs-other'
-                : 'other-cs'
-            )
-          }
+          style={styles.good}
+          onClick={() => applyAnswer(true)}
         >
-          Switch Direction
+          I knew it
         </button>
 
         <button
           type='button'
-          style={styles.button}
-          onClick={() =>
-            setDictionary(
-              dictionary === 'sv'
-                ? 'sv2'
-                : dictionary === 'sv2'
-                ? 'en'
-                : 'sv'
-            )
-          }
+          style={styles.bad}
+          onClick={() => applyAnswer(false)}
         >
-          Switch Database
+          Missed
         </button>
       </div>
 
@@ -156,9 +158,13 @@ const Dictionary = (): JSX.Element => {
           onChange={e => setIntervalSec(Number(e.target.value))}
           style={styles.slider}
         />
-        <div style={styles.sliderLabel}>
+        <div style={styles.label}>
           Speed: {intervalSec}s
         </div>
+      </div>
+
+      <div style={styles.level}>
+        Koch level: {kochIndex} / {cards.length}
       </div>
     </div>
   )
@@ -177,8 +183,8 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: 'center',
   },
   wordBlock: {
-    minHeight: 140, // FIX HEIGHT = žádné poskakování
-    marginBottom: 40,
+    minHeight: 140,
+    marginBottom: 30,
   },
   word: {
     fontSize: 48,
@@ -189,20 +195,24 @@ const styles: Record<string, React.CSSProperties> = {
     opacity: 0.7,
     marginTop: 12,
   },
-  controls: {
+  buttons: {
     display: 'flex',
     gap: 12,
     marginBottom: 30,
-    flexWrap: 'wrap',
-    justifyContent: 'center',
   },
-  button: {
-    padding: '12px 20px',
+  good: {
+    padding: '14px 20px',
     borderRadius: 30,
     border: 'none',
     backgroundColor: '#4a7c59',
     color: '#fff',
-    fontSize: 14,
+  },
+  bad: {
+    padding: '14px 20px',
+    borderRadius: 30,
+    border: 'none',
+    backgroundColor: '#a33',
+    color: '#fff',
   },
   sliderContainer: {
     width: '100%',
@@ -211,8 +221,13 @@ const styles: Record<string, React.CSSProperties> = {
   slider: {
     width: '100%',
   },
-  sliderLabel: {
+  label: {
     marginTop: 8,
+    fontSize: 14,
+    opacity: 0.6,
+  },
+  level: {
+    marginTop: 20,
     fontSize: 14,
     opacity: 0.6,
   },
