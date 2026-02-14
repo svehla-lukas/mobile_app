@@ -1,154 +1,41 @@
 # Czech <> Swedish – zajímavá a užitečná slovíčka
 # Formát: česky <> švédsky
 
-západ slunce  <>  nedgång
-tak akorát, vyváženě <> lagom
-přestávka na kávu (společenský rituál) <> fika
-sladký smutek z pomíjivosti <> vemod
-měsíční odraz na vodě <> mångata
-oblíbené tajné místo <> smultronställe
-zvládat <> orka
-samozřejmě <> självklart
-druh, družka <> sambo
-útulný, příjemný <> mysig
-milý, příjemný <> trevlig
-
-stud z létání (ekologický) <> flygskam
-úklid věcí před smrtí <> döstädning
-slepá ulice <> återvändsgränd
-věčný optimista ohledně času <> tidsoptimist
-obývací pokoj <> vardagsrum
-sněhová bouře <> snöstorm
-soumrak <> skymning
-úsvit <> gryning
-modré světlo (záchranáři) <> blåljus
-rychlá dešťová přeháňka <> regnrus
-
-člověk užívající si život <> livsnjutare
-pomalý <> långsam
-rychlý <> snabb
-očekávání <> förväntan
-zklamání <> besvikelse
-v bezpečí, klidný <> trygg
-samota <> ensamhet
-sounáležitost <> gemenskap
-svoboda <> frihet
-odpovědnost <> ansvar
-
-trpělivost <> tålamod
-netrpělivý <> otålig
-zamilovaný <> förälskad
-láska <> kärlek
-blízký přítel <> hjärtevän
-přátelství <> vänskap
-důvěra <> förtroende
-upřímnost <> ärlighet
-odvaha <> mod
-strach <> rädsla
-
-každodenní štěstí <> vardagslycka
-radost ze života <> livsglädje
-snít <> drömma
-realita <> verklighet
-naděje <> hopp
-touha <> längtan
-vzpomínka <> minne
-budoucnost <> framtid
-přítomnost <> nutid
-minulost <> förflutet
-
-zvědavý <> nyfiken
-úžas <> förundran
-porozumění <> förståelse
-uvědomění <> insikt
-myšlenka <> tanke
-nápad <> idé
-pocit <> känsla
-atmosféra <> stämning
-ticho <> tystnad
-klid <> ro
-
-pohoda, útulnost (z dánštiny) <> hygge
-tíživý smutek <> svårmod
-stesk po domově <> hemlängtan
-nervozita před cestou <> resfeber
-duševní klid <> sinnesro
-každodenní život <> vardag
-obyčejný, všední <> vardaglig
-životní volba <> livsval
-životní cesta <> livsresa
-pocit, že někam patřím <> tillhörighet
-
-překvapení <> överraskning
-zmatený <> förbryllad
-zmatek <> förvirring
-klidný <> lugn
-ve stresu <> stressad
-odpočatý <> utvilad
-vyčerpaný <> utmattad
-bez energie <> energilös
-soustředěný <> fokuserad
-roztěkaný <> splittrad
-
-změna <> förändring
-zlepšení <> förbättring
-ztráta <> förlust
-zisk <> vinst
-pokrok <> framsteg
-krok zpět <> bakslag
-příležitost <> möjlighet
-omezení <> begränsning
-svoboda volby <> valfrihet
-zodpovědný <> ansvarsfull
-
-ohleduplný <> omtänksam
-sobecký <> självisk
-štědrý <> generös
-lakomý <> snål
-upřímný <> ärlig
-spolehlivý <> pålitlig
-nejistý <> osäker
-pocit bezpečí <> trygghet
-zoufalství <> förtvivlan
-úleva <> lättnad
-
-přítomnost (mentální) <> närvaro
-nepřítomnost <> frånvaro
-pozornost <> uppmärksamhet
-lhostejný <> likgiltig
-zaujatý, zapojený <> engagerad
-nadšení <> entusiasm
-váhání <> tvekan
-rozhodný <> beslutsam
-vytrvalost <> uthållighet
-síla vůle <> viljestyrka
-
-spokojenost <> tillfredsställelse
-nespokojený <> otillfredsställd
-zhoršit se <> förvärras
-zmírnit <> lindra
-vážit si <> uppskatta
-brát jako samozřejmost <> ta för givet
-vydržet <> stå ut
-vzdát se <> ge upp
-převzít odpovědnost <> ta ansvar
-nechat jít <> släppa taget
-
-dopoledne <> förmiddag
-odpoledne <> eftermiddag
-večer <> kväll
-noc <> natt
-ráno <> morgon
-
-pondělí <> måndag
-úterý <> tisdag
-středa <> onsdag
-čtvrtek <> torsdag
-pátek <> fredag
-sobota <> lördag
-neděle <> söndag
-
-jaro <> vår
-léto <> sommar
-podzim <> höst
-zima <> vinter
+tillgänglig <> dostupný
+behörig <> příslušný 
+övergripande <> vyčerpávající, úplný
+smidig <> poddajný, pružný
+inträde <> přijetí; vstup
+en stockning  <> dopravní zácpa
+utmana <> vyzvat (někoho např. k souboji)
+uppmana <> naléhat, vybídnout k činnosti
+utmatta <> vysílit, vyčerpat
+uttråkad <> znuděný
+för ett tag sedan <> před nějakou dobou
+ersätta <> nahradit
+en gåshud <> husí kůže
+förvara  <> uschovat, uložit
+bevara <> přechovávat, opatrovat
+erkänna <> uznat, přiznat
+ett korn;  <> obilí
+ett vete <> pšenice
+en vävnad, -er <> tkáň
+tillgänglig <> přístupný
+träffande <> výstižný
+konstgjord <> umělý
+bråka <> hádat se
+smärtsam <> bolestivý
+nysa <> kýchnout
+depresivní (hovorově) <> deppig
+härledd <> odvozený
+mysigt <> příjemný, útulný
+blyg <> nasmělý
+vederlägga <> vyvrátit
+passa <> sedět (např. o oblečení); dát, podat
+passa på (och göra något) <> využít něčeho, příležitosti něco udělat
+skiljas åt <> oddělit se
+en byggställning <> lešení
+vara lik/likt/lika någon/något <> být někomu/něčemu podobný
+främja / ett främjande <> vytvářet dobré podmínky (pro něco), přispívat
+riva <> škrábnout (do kůže), strouhat (mrkev); zničit, strhnout (dům)
+mala <> mlít
