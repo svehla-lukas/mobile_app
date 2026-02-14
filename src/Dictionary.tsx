@@ -13,7 +13,7 @@ type KochState = {
   recentAnswersByDict: Record<DictionaryLang, boolean[]>
 }
 
-const STORAGE_KEY = 'vocab-trainer:koch:v4'
+const STORAGE_KEY = 'vocab-trainer:koch:v5'
 const REVEAL_DELAY_MS = 2000
 const KOCH_START_SIZE = 2
 const KOCH_THRESHOLD = 0.85
@@ -28,30 +28,25 @@ const DICTIONARY_FILES: Record<DictionaryLang, string> = {
 const loadTxtFromPublic = async (path: string): Promise<string> => {
   const base = process.env.PUBLIC_URL || ''
   const res = await fetch(`${base}/${path}`)
-  if (!res.ok) {
-    throw new Error(`Failed to load ${path}`)
-  }
+  if (!res.ok) throw new Error(`Failed to load ${path}`)
   return res.text()
 }
 
 const parseTxt = (txt: string): Card[] =>
   txt
     .split(/\r?\n/g)
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0 && !line.startsWith('#'))
+    .map(line => line.trim())
+    .filter(line => line.length > 0 && !line.startsWith('#'))
     .map((line, index) => {
       const parts = line.split('<>')
-      if (parts.length < 2) {
-        return null
-      }
-
+      if (parts.length < 2) return null
       return {
         id: String(index),
         cs: parts[0].trim(),
         other: parts.slice(1).join('<>').trim(),
       }
     })
-    .filter((value): value is Card => value !== null)
+    .filter((v): v is Card => v !== null)
 
 const loadKochState = (): KochState => {
   const raw = localStorage.getItem(STORAGE_KEY)
@@ -75,56 +70,47 @@ const Dictionary = (): JSX.Element => {
   const [cardsSv2, setCardsSv2] = useState<Card[]>([])
   const [cardsEn, setCardsEn] = useState<Card[]>([])
 
-  const [kochState, setKochState] = useState<KochState>(() =>
-    loadKochState()
-  )
+  const [kochState, setKochState] = useState<KochState>(() => loadKochState())
 
   const [current, setCurrent] = useState<Card | null>(null)
-  const [showTranslation, setShowTranslation] = useState<boolean>(false)
+  const [showTranslation, setShowTranslation] = useState(false)
 
   const revealTimerRef = useRef<number | null>(null)
 
   const dictionaryLang: DictionaryLang = 'sv'
 
-  const currentCards: Card[] =
+  const currentCards =
     dictionaryLang === 'sv'
       ? cardsSv
       : dictionaryLang === 'sv2'
       ? cardsSv2
       : cardsEn
 
-  const kochIndex: number =
+  const kochIndex =
     kochState.kochIndexByDict[dictionaryLang] ?? KOCH_START_SIZE
 
-  const activeCards: Card[] = useMemo(() => {
-    return currentCards.slice(0, kochIndex)
-  }, [currentCards, kochIndex])
+  const activeCards = useMemo(() => currentCards.slice(0, kochIndex), [
+    currentCards,
+    kochIndex,
+  ])
 
   const evaluateProgress = (answers: boolean[]): boolean => {
-    if (answers.length < KOCH_WINDOW) {
-      return false
-    }
+    if (answers.length < KOCH_WINDOW) return false
 
     const recent = answers.slice(-KOCH_WINDOW)
-    const successRate =
-      recent.filter((answer) => answer).length / KOCH_WINDOW
+    const successRate = recent.filter(a => a).length / KOCH_WINDOW
 
     return successRate >= KOCH_THRESHOLD
   }
 
   const pickRandomCard = (): Card | null => {
-    if (activeCards.length === 0) {
-      return null
-    }
-
+    if (activeCards.length === 0) return null
     const index = Math.floor(Math.random() * activeCards.length)
     return activeCards[index]
   }
 
   const applyAnswer = (known: boolean): void => {
-    if (!current) {
-      return
-    }
+    if (!current) return
 
     const previousAnswers =
       kochState.recentAnswersByDict[dictionaryLang] ?? []
@@ -176,9 +162,7 @@ const Dictionary = (): JSX.Element => {
   }, [])
 
   useEffect(() => {
-    if (activeCards.length === 0) {
-      return
-    }
+    if (activeCards.length === 0) return
 
     const id = requestAnimationFrame(() => {
       const nextCard = pickRandomCard()
@@ -190,9 +174,7 @@ const Dictionary = (): JSX.Element => {
   }, [activeCards])
 
   useEffect(() => {
-    if (!current) {
-      return
-    }
+    if (!current) return
 
     if (revealTimerRef.current) {
       clearTimeout(revealTimerRef.current)
@@ -209,9 +191,7 @@ const Dictionary = (): JSX.Element => {
     }
   }, [current])
 
-  if (!current) {
-    return <div style={{ padding: 40 }}>Loading...</div>
-  }
+  if (!current) return <div style={{ padding: 40 }}>Loading...</div>
 
   return (
     <div style={{ textAlign: 'center', padding: 40 }}>
@@ -220,11 +200,11 @@ const Dictionary = (): JSX.Element => {
       {showTranslation && <h2>{current.cs}</h2>}
 
       <div style={{ marginTop: 30 }}>
-        <button type="button" onClick={() => applyAnswer(true)}>
+        <button type='button' onClick={() => applyAnswer(true)}>
           Know
         </button>
 
-        <button type="button" onClick={() => applyAnswer(false)}>
+        <button type='button' onClick={() => applyAnswer(false)}>
           Don&apos;t know
         </button>
       </div>
