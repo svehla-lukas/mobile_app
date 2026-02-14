@@ -6,8 +6,14 @@ type Card = {
   other: string
 }
 
-const DICTIONARY_FILE = 'vocabulary-sw.txt'
-const CHANGE_INTERVAL_MS = 2000
+type DictionaryLang = 'sv' | 'sv2' | 'en'
+type Direction = 'other-cs' | 'cs-other'
+
+const DICTIONARY_FILES: Record<DictionaryLang, string> = {
+  sv: 'vocabulary-sw.txt',
+  sv2: 'vocabulary-sw2.txt',
+  en: 'vocabulary-en.txt',
+}
 
 const loadTxtFromPublic = async (path: string): Promise<string> => {
   const base = process.env.PUBLIC_URL || ''
@@ -34,54 +40,66 @@ const parseTxt = (txt: string): Card[] =>
 
 const Dictionary = (): JSX.Element => {
   const [cards, setCards] = useState<Card[]>([])
-  const [activeCount, setActiveCount] = useState<number>(2)
+  const [dictionary, setDictionary] = useState<DictionaryLang>('sv')
+  const [direction, setDirection] = useState<Direction>('other-cs')
+  const [intervalSec, setIntervalSec] = useState<number>(3)
   const [current, setCurrent] = useState<Card | null>(null)
-  const intervalRef = useRef<number | null>(null)
+  const [showTranslation, setShowTranslation] = useState(false)
 
-  const activeCards = useMemo(
-    () => cards.slice(0, activeCount),
-    [cards, activeCount]
-  )
+  const intervalRef = useRef<number | null>(null)
+  const revealRef = useRef<number | null>(null)
 
   const pickRandom = (): Card | null => {
-    if (activeCards.length === 0) return null
-    const index = Math.floor(Math.random() * activeCards.length)
-    return activeCards[index]
+    if (cards.length === 0) return null
+    const index = Math.floor(Math.random() * cards.length)
+    return cards[index]
   }
 
+  /* Load dictionary */
   useEffect(() => {
     const load = async (): Promise<void> => {
-      const txt = await loadTxtFromPublic(DICTIONARY_FILE)
+      const txt = await loadTxtFromPublic(DICTIONARY_FILES[dictionary])
       setCards(parseTxt(txt))
     }
-
     load()
-  }, [])
+  }, [dictionary])
 
+  /* Word switching logic */
   useEffect(() => {
-    if (activeCards.length === 0) return
+    if (cards.length === 0) return
 
     const changeWord = () => {
       const next = pickRandom()
       setCurrent(next)
+      setShowTranslation(false)
+
+      if (revealRef.current) clearTimeout(revealRef.current)
+
+      revealRef.current = window.setTimeout(() => {
+        setShowTranslation(true)
+      }, (intervalSec * 1000) / 2)
     }
 
     changeWord()
 
-    intervalRef.current = window.setInterval(changeWord, CHANGE_INTERVAL_MS)
+    if (intervalRef.current) clearInterval(intervalRef.current)
+
+    intervalRef.current = window.setInterval(
+      changeWord,
+      intervalSec * 1000
+    )
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current)
+      if (revealRef.current) clearTimeout(revealRef.current)
     }
-  }, [activeCards])
+  }, [cards, intervalSec])
 
-  const addWord = (): void => {
-    if (activeCount < cards.length) {
-      setActiveCount(activeCount + 1)
-    }
-  }
+  const question =
+    direction === 'other-cs' ? current?.other : current?.cs
+
+  const translation =
+    direction === 'other-cs' ? current?.cs : current?.other
 
   if (!current) {
     return <div style={styles.loading}>Loading...</div>
@@ -89,17 +107,58 @@ const Dictionary = (): JSX.Element => {
 
   return (
     <div style={styles.container}>
-      <div style={styles.card}>
-        <div style={styles.word}>{current.other}</div>
-        <div style={styles.translation}>{current.cs}</div>
+      <div style={styles.wordBlock}>
+        <div style={styles.word}>{question}</div>
+        <div style={styles.translation}>
+          {showTranslation ? translation : ''}
+        </div>
       </div>
 
-      <button type='button' style={styles.addButton} onClick={addWord}>
-        + Add word
-      </button>
+      <div style={styles.controls}>
+        <button
+          type='button'
+          style={styles.button}
+          onClick={() =>
+            setDirection(
+              direction === 'other-cs'
+                ? 'cs-other'
+                : 'other-cs'
+            )
+          }
+        >
+          Switch Direction
+        </button>
 
-      <div style={styles.counter}>
-        Active words: {activeCount}
+        <button
+          type='button'
+          style={styles.button}
+          onClick={() =>
+            setDictionary(
+              dictionary === 'sv'
+                ? 'sv2'
+                : dictionary === 'sv2'
+                ? 'en'
+                : 'sv'
+            )
+          }
+        >
+          Switch Database
+        </button>
+      </div>
+
+      <div style={styles.sliderContainer}>
+        <input
+          type='range'
+          min='1'
+          max='4'
+          step='0.5'
+          value={intervalSec}
+          onChange={e => setIntervalSec(Number(e.target.value))}
+          style={styles.slider}
+        />
+        <div style={styles.sliderLabel}>
+          Speed: {intervalSec}s
+        </div>
       </div>
     </div>
   )
@@ -117,29 +176,44 @@ const styles: Record<string, React.CSSProperties> = {
     padding: 20,
     textAlign: 'center',
   },
-  card: {
+  wordBlock: {
+    minHeight: 140, // FIX HEIGHT = žádné poskakování
     marginBottom: 40,
   },
   word: {
     fontSize: 48,
     fontWeight: 800,
-    marginBottom: 16,
   },
   translation: {
-    fontSize: 28,
-    opacity: 0.8,
+    fontSize: 26,
+    opacity: 0.7,
+    marginTop: 12,
   },
-  addButton: {
-    fontSize: 20,
-    padding: '16px 32px',
-    borderRadius: 40,
+  controls: {
+    display: 'flex',
+    gap: 12,
+    marginBottom: 30,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  button: {
+    padding: '12px 20px',
+    borderRadius: 30,
     border: 'none',
     backgroundColor: '#4a7c59',
     color: '#fff',
-    marginBottom: 20,
+    fontSize: 14,
   },
-  counter: {
-    fontSize: 16,
+  sliderContainer: {
+    width: '100%',
+    maxWidth: 300,
+  },
+  slider: {
+    width: '100%',
+  },
+  sliderLabel: {
+    marginTop: 8,
+    fontSize: 14,
     opacity: 0.6,
   },
   loading: {
@@ -147,7 +221,6 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    fontSize: 20,
   },
 }
 
