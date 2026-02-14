@@ -1,9 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
-/* ========================================================= */
-/* Types                                                     */
-/* ========================================================= */
-
 type Card = {
   id: string
   cs: string
@@ -17,11 +13,7 @@ type KochState = {
   recentAnswersByDict: Record<DictionaryLang, boolean[]>
 }
 
-/* ========================================================= */
-/* Constants                                                 */
-/* ========================================================= */
-
-const STORAGE_KEY = 'vocab-trainer:koch:v3'
+const STORAGE_KEY = 'vocab-trainer:koch:v4'
 const REVEAL_DELAY_MS = 2000
 const KOCH_START_SIZE = 2
 const KOCH_THRESHOLD = 0.85
@@ -32,10 +24,6 @@ const DICTIONARY_FILES: Record<DictionaryLang, string> = {
   sv2: 'vocabulary-sw2.txt',
   en: 'vocabulary-en.txt',
 }
-
-/* ========================================================= */
-/* Utils                                                     */
-/* ========================================================= */
 
 const loadTxtFromPublic = async (path: string): Promise<string> => {
   const base = process.env.PUBLIC_URL || ''
@@ -49,27 +37,32 @@ const loadTxtFromPublic = async (path: string): Promise<string> => {
 const parseTxt = (txt: string): Card[] =>
   txt
     .split(/\r?\n/g)
-    .map(l => l.trim())
-    .filter(l => l.length > 0 && !l.startsWith('#'))
-    .map((line, i) => {
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0 && !line.startsWith('#'))
+    .map((line, index) => {
       const parts = line.split('<>')
-      if (parts.length < 2) return null
+      if (parts.length < 2) {
+        return null
+      }
+
       return {
-        id: String(i),
+        id: String(index),
         cs: parts[0].trim(),
         other: parts.slice(1).join('<>').trim(),
       }
     })
-    .filter((x): x is Card => x !== null)
+    .filter((value): value is Card => value !== null)
 
 const loadKochState = (): KochState => {
   const raw = localStorage.getItem(STORAGE_KEY)
+
   if (!raw) {
     return {
       kochIndexByDict: { sv: 2, sv2: 2, en: 2 },
       recentAnswersByDict: { sv: [], sv2: [], en: [] },
     }
   }
+
   return JSON.parse(raw) as KochState
 }
 
@@ -77,63 +70,66 @@ const saveKochState = (state: KochState): void => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
 }
 
-/* ========================================================= */
-/* Component                                                 */
-/* ========================================================= */
-
-const Dictionary = () => {
+const Dictionary = (): JSX.Element => {
   const [cardsSv, setCardsSv] = useState<Card[]>([])
   const [cardsSv2, setCardsSv2] = useState<Card[]>([])
   const [cardsEn, setCardsEn] = useState<Card[]>([])
 
-  const [dictionaryLang] = useState<DictionaryLang>('sv')
-
-  const [kochState, setKochState] =
-    useState<KochState>(() => loadKochState())
+  const [kochState, setKochState] = useState<KochState>(() =>
+    loadKochState()
+  )
 
   const [current, setCurrent] = useState<Card | null>(null)
-  const [showTranslation, setShowTranslation] = useState(false)
+  const [showTranslation, setShowTranslation] = useState<boolean>(false)
 
   const revealTimerRef = useRef<number | null>(null)
 
-  /* ========================================================= */
+  const dictionaryLang: DictionaryLang = 'sv'
 
-  const currentCards =
+  const currentCards: Card[] =
     dictionaryLang === 'sv'
       ? cardsSv
       : dictionaryLang === 'sv2'
       ? cardsSv2
       : cardsEn
 
-  const kochIndex =
+  const kochIndex: number =
     kochState.kochIndexByDict[dictionaryLang] ?? KOCH_START_SIZE
 
-  const activeCards = useMemo(
-    () => currentCards.slice(0, kochIndex),
-    [currentCards, kochIndex]
-  )
-
-  const pickRandom = (): Card | null => {
-    if (activeCards.length === 0) return null
-    const i = Math.floor(Math.random() * activeCards.length)
-    return activeCards[i]
-  }
+  const activeCards: Card[] = useMemo(() => {
+    return currentCards.slice(0, kochIndex)
+  }, [currentCards, kochIndex])
 
   const evaluateProgress = (answers: boolean[]): boolean => {
-    if (answers.length < KOCH_WINDOW) return false
+    if (answers.length < KOCH_WINDOW) {
+      return false
+    }
+
     const recent = answers.slice(-KOCH_WINDOW)
-    const success =
-      recent.filter(a => a).length / KOCH_WINDOW
-    return success >= KOCH_THRESHOLD
+    const successRate =
+      recent.filter((answer) => answer).length / KOCH_WINDOW
+
+    return successRate >= KOCH_THRESHOLD
+  }
+
+  const pickRandomCard = (): Card | null => {
+    if (activeCards.length === 0) {
+      return null
+    }
+
+    const index = Math.floor(Math.random() * activeCards.length)
+    return activeCards[index]
   }
 
   const applyAnswer = (known: boolean): void => {
-    if (!current) return
+    if (!current) {
+      return
+    }
 
-    const prevAnswers =
+    const previousAnswers =
       kochState.recentAnswersByDict[dictionaryLang] ?? []
 
-    const updatedAnswers = [...prevAnswers, known]
+    const updatedAnswers = [...previousAnswers, known]
 
     let updatedIndex = kochIndex
 
@@ -157,17 +153,14 @@ const Dictionary = () => {
     setKochState(newState)
     saveKochState(newState)
 
-    const next = pickRandom()
+    const nextCard = pickRandomCard()
+
     setShowTranslation(false)
-    setCurrent(next)
+    setCurrent(nextCard)
   }
 
-  /* ========================================================= */
-  /* Loading                                                  */
-  /* ========================================================= */
-
   useEffect(() => {
-    const load = async () => {
+    const load = async (): Promise<void> => {
       const [sv, sv2, en] = await Promise.all([
         loadTxtFromPublic(DICTIONARY_FILES.sv),
         loadTxtFromPublic(DICTIONARY_FILES.sv2),
@@ -182,26 +175,24 @@ const Dictionary = () => {
     load()
   }, [])
 
-  /* ========================================================= */
-  /* Initial card selection                                   */
-  /* ========================================================= */
-
   useEffect(() => {
-    if (activeCards.length === 0) return
+    if (activeCards.length === 0) {
+      return
+    }
 
     const id = requestAnimationFrame(() => {
-      const next = pickRandom()
-      setCurrent(next)
+      const nextCard = pickRandomCard()
+      setCurrent(nextCard)
       setShowTranslation(false)
     })
 
     return () => cancelAnimationFrame(id)
   }, [activeCards])
 
-  /* ========================================================= */
-
   useEffect(() => {
-    if (!current) return
+    if (!current) {
+      return
+    }
 
     if (revealTimerRef.current) {
       clearTimeout(revealTimerRef.current)
@@ -218,10 +209,8 @@ const Dictionary = () => {
     }
   }, [current])
 
-  /* ========================================================= */
-
   if (!current) {
-    return <div style={{ padding: 40 }}>Loading…</div>
+    return <div style={{ padding: 40 }}>Loading...</div>
   }
 
   return (
@@ -231,11 +220,11 @@ const Dictionary = () => {
       {showTranslation && <h2>{current.cs}</h2>}
 
       <div style={{ marginTop: 30 }}>
-        <button onClick={() => applyAnswer(true)}>
+        <button type="button" onClick={() => applyAnswer(true)}>
           Know
         </button>
 
-        <button onClick={() => applyAnswer(false)}>
+        <button type="button" onClick={() => applyAnswer(false)}>
           Don&apos;t know
         </button>
       </div>
