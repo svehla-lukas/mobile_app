@@ -7,7 +7,7 @@ type Card = {
 }
 
 const DICTIONARY_FILE = 'vocabulary-sw.txt'
-const CHANGE_INTERVAL_MS = 3000
+const CHANGE_INTERVAL_MS = 2000
 
 const loadTxtFromPublic = async (path: string): Promise<string> => {
   const base = process.env.PUBLIC_URL || ''
