@@ -82,7 +82,7 @@ const Dictionary = (): JSX.Element => {
 
     if (evaluateProgress(updated)) {
       if (kochIndex < cards.length) {
-        setKochIndex(kochIndex + 1)
+        setKochIndex(prev => prev + 1)
       }
     }
 
@@ -98,11 +98,13 @@ const Dictionary = (): JSX.Element => {
     load()
   }, [])
 
-  /* Word switching */
+  /* Word switching (FIXED - no sync setState) */
   useEffect(() => {
     if (activeCards.length === 0) return
 
-    nextWord()
+    const raf = requestAnimationFrame(() => {
+      nextWord()
+    })
 
     if (intervalRef.current) clearInterval(intervalRef.current)
 
@@ -112,6 +114,7 @@ const Dictionary = (): JSX.Element => {
     )
 
     return () => {
+      cancelAnimationFrame(raf)
       if (intervalRef.current) clearInterval(intervalRef.current)
       if (revealRef.current) clearTimeout(revealRef.current)
     }
