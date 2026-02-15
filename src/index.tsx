@@ -1,7 +1,7 @@
 import './index.css'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
-import Dictionary from './Dictionary'
-import DictionaryPeter from './DictionaryPeter'
+import DictionaryPeter from './Dictionary'
+// import DictionaryPeter from './DictionaryPeter'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import reportWebVitals from './reportWebVitals'
@@ -15,7 +15,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <>
     <Dictionary />
-    <DictionaryPeter />
+    //  <DictionaryPeter />
   </>
 )
 
