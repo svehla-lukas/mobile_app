@@ -15,7 +15,7 @@ const DICTIONARY_FILES: Record<DictionaryLang, string> = {
   en: 'vocabulary-en.txt',
 }
 
-const KOCH_START = 2
+const KOCH_START = 4
 const KOCH_WINDOW = 20
 const KOCH_THRESHOLD = 0.85
 
