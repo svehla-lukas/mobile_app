@@ -7,7 +7,7 @@ behörig <> příslušný 
 smidig <> poddajný, pružný
 inträde <> přijetí; vstup
 en stockning  <> dopravní zácpa
-utmana <> vyzvat (někoho např. k souboji)
+utmana <> vyzvat (k souboji)
 uppmana <> naléhat, vybídnout k činnosti
 utmatta <> vysílit, vyčerpat
 uttråkad <> znuděný
@@ -17,9 +17,9 @@ en gåshud <> husí kůže
 förvara  <> uschovat, uložit
 bevara <> přechovávat, opatrovat
 erkänna <> uznat, přiznat
-ett korn;  <> obilí
+ett korn <> obilí
 ett vete <> pšenice
-en vävnad, -er <> tkáň
+en vävnad <> tkáň
 tillgänglig <> přístupný
 träffande <> výstižný
 konstgjord <> umělý
@@ -31,11 +31,13 @@ härledd <> odvozený
 mysigt <> příjemný, útulný
 blyg <> nasmělý
 vederlägga <> vyvrátit
-passa <> sedět (např. o oblečení); dát, podat
-passa på (och göra något) <> využít něčeho, příležitosti něco udělat
+passa <> sedět, padnout
+passa <> předat, podat
+passa på <> příležitostně dělat
 skiljas åt <> oddělit se
 en byggställning <> lešení
-vara lik/likt/lika någon/något <> být někomu/něčemu podobný
-främja / ett främjande <> vytvářet dobré podmínky (pro něco), přispívat
-riva <> škrábnout (do kůže), strouhat (mrkev); zničit, strhnout (dům)
+vara lik <> být podobný
+främja <> podporovat
+riva <> škrábat, strouhat 
+riva <> zničit, strhnout (dům)
 mala <> mlít
