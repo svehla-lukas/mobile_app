@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 type Card = {
   id: string
@@ -10,9 +10,9 @@ type DictionaryLang = 'sv' | 'sv2' | 'en'
 type Direction = 'other-cs' | 'cs-other'
 
 const DICTIONARY_FILES: Record<DictionaryLang, string> = {
-  sv: 'vocabulary-sw.txt',
-  sv2: 'vocabulary-sw2.txt',
   en: 'vocabulary-en.txt',
+  sv: 'vocabulary-sw.txt',
+  sv2: 'vocabulary-sw2.txt'
 }
 
 const KOCH_START = 4
@@ -37,21 +37,19 @@ const parseTxt = (txt: string): Card[] =>
       return {
         id: String(index),
         cs: parts[0].trim(),
-        other: parts.slice(1).join('<>').trim(),
+        other: parts.slice(1).join('<>').trim()
       }
     })
     .filter((v): v is Card => v !== null)
 
-const Dictionary = (): JSX.Element => {
+const Dictionary = () => {
+  const [answers, setAnswers] = useState<boolean[]>([])
   const [cards, setCards] = useState<Card[]>([])
+  const [current, setCurrent] = useState<Card | null>(null)
   const [dictionary, setDictionary] = useState<DictionaryLang>('sv')
   const [direction, setDirection] = useState<Direction>('other-cs')
-
-  const [kochIndex, setKochIndex] = useState<number>(KOCH_START)
-  const [answers, setAnswers] = useState<boolean[]>([])
-
   const [intervalSec, setIntervalSec] = useState<number>(3)
-  const [current, setCurrent] = useState<Card | null>(null)
+  const [kochIndex, setKochIndex] = useState<number>(KOCH_START)
   const [showTranslation, setShowTranslation] = useState<boolean>(false)
 
   const intervalRef = useRef<number | null>(null)
@@ -77,7 +75,9 @@ const Dictionary = (): JSX.Element => {
     setCurrent(next)
     setShowTranslation(false)
 
-    if (revealRef.current) clearTimeout(revealRef.current)
+    if (revealRef.current !== null) {
+      clearTimeout(revealRef.current)
+    }
 
     revealRef.current = window.setTimeout(() => {
       setShowTranslation(true)
@@ -102,15 +102,17 @@ const Dictionary = (): JSX.Element => {
 
   const switchDictionary = (next: DictionaryLang): void => {
     if (next === dictionary) {
-      // Přepnutí směru jazyka
-      setDirection(prev =>
-        prev === 'other-cs' ? 'cs-other' : 'other-cs'
-      )
+      setDirection(prev => (prev === 'other-cs' ? 'cs-other' : 'other-cs'))
       return
     }
 
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    if (revealRef.current) clearTimeout(revealRef.current)
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current)
+    }
+
+    if (revealRef.current !== null) {
+      clearTimeout(revealRef.current)
+    }
 
     setDictionary(next)
     setDirection('other-cs')
@@ -120,16 +122,15 @@ const Dictionary = (): JSX.Element => {
     setShowTranslation(false)
   }
 
-  /* Load dictionary */
   useEffect(() => {
     const load = async (): Promise<void> => {
       const txt = await loadTxtFromPublic(DICTIONARY_FILES[dictionary])
       setCards(parseTxt(txt))
     }
+
     load()
   }, [dictionary])
 
-  /* Word switching */
   useEffect(() => {
     if (activeCards.length === 0) return
 
@@ -137,7 +138,9 @@ const Dictionary = (): JSX.Element => {
       nextWord()
     })
 
-    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current)
+    }
 
     intervalRef.current = window.setInterval(() => {
       nextWord()
@@ -145,20 +148,23 @@ const Dictionary = (): JSX.Element => {
 
     return () => {
       cancelAnimationFrame(raf)
-      if (intervalRef.current) clearInterval(intervalRef.current)
-      if (revealRef.current) clearTimeout(revealRef.current)
+
+      if (intervalRef.current !== null) {
+        clearInterval(intervalRef.current)
+      }
+
+      if (revealRef.current !== null) {
+        clearTimeout(revealRef.current)
+      }
     }
   }, [activeCards, intervalSec])
 
-  if (!current) {
+  if (current === null) {
     return <div style={styles.loading}>Loading...</div>
   }
 
-  const question =
-    direction === 'other-cs' ? current.other : current.cs
-
-  const translation =
-    direction === 'other-cs' ? current.cs : current.other
+  const question = direction === 'other-cs' ? current.other : current.cs
+  const translation = direction === 'other-cs' ? current.cs : current.other
 
   return (
     <div style={styles.container}>
@@ -211,77 +217,77 @@ const Dictionary = (): JSX.Element => {
 }
 
 const styles: Record<string, React.CSSProperties> = {
+  bad: {
+    padding: '14px 20px',
+    borderRadius: 30,
+    border: 'none',
+    backgroundColor: '#a33',
+    color: '#fff'
+  },
+  buttons: {
+    display: 'flex',
+    gap: 12,
+    marginBottom: 30
+  },
   container: {
     minHeight: '100vh',
-    backgroundColor: '#111',
-    color: '#fff',
+    backgroundColor: '#ffc0cb',
+    color: '#000',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    textAlign: 'center',
+    textAlign: 'center'
   },
-  wordBlock: {
-    minHeight: 140,
-    marginBottom: 30,
-  },
-  word: {
-    fontSize: 48,
-    fontWeight: 800,
-  },
-  translation: {
-    fontSize: 26,
-    opacity: 0.7,
-    marginTop: 12,
-  },
-  buttons: {
+  dbButtons: {
     display: 'flex',
-    gap: 12,
-    marginBottom: 30,
+    gap: 8,
+    marginTop: 20
   },
   good: {
     padding: '14px 20px',
     borderRadius: 30,
     border: 'none',
     backgroundColor: '#4a7c59',
-    color: '#fff',
-  },
-  bad: {
-    padding: '14px 20px',
-    borderRadius: 30,
-    border: 'none',
-    backgroundColor: '#a33',
-    color: '#fff',
-  },
-  sliderContainer: {
-    width: '100%',
-    maxWidth: 300,
-  },
-  slider: {
-    width: '100%',
+    color: '#fff'
   },
   label: {
     marginTop: 8,
     fontSize: 14,
-    opacity: 0.6,
-  },
-  dbButtons: {
-    display: 'flex',
-    gap: 8,
-    marginTop: 20,
+    opacity: 0.6
   },
   level: {
     marginTop: 20,
     fontSize: 14,
-    opacity: 0.6,
+    opacity: 0.6
   },
   loading: {
     minHeight: '100vh',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
+  slider: {
+    width: '100%'
+  },
+  sliderContainer: {
+    width: '100%',
+    maxWidth: 300
+  },
+  translation: {
+    fontSize: 26,
+    opacity: 0.7,
+    marginTop: 12
+  },
+  word: {
+    fontSize: 48,
+    fontWeight: 800
+  },
+  wordBlock: {
+    minHeight: 140,
+    marginBottom: 30
+  }
 }
 
 export default Dictionary
