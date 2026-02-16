@@ -1,293 +1,217 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-type Card = {
-  id: string
-  cs: string
-  other: string
+type Pair = {
+  left: string
+  right: string
 }
 
-type DictionaryLang = 'sv' | 'sv2' | 'en'
-type Direction = 'other-cs' | 'cs-other'
+const STEP_TIME = 1000
 
-const DICTIONARY_FILES: Record<DictionaryLang, string> = {
-  en: 'vocabulary-en.txt',
-  sv: 'vocabulary-sw.txt',
-  sv2: 'vocabulary-sw2.txt'
-}
+const KochTrainer = () => {
+  const [instruction, setInstruction] = useState<string>(
+    'New words learning based on Koch method.'
+  )
+  const [allPairs, setAllPairs] = useState<Pair[]>([])
+  const [activePairs, setActivePairs] = useState<Pair[]>([])
+  const [currentPair, setCurrentPair] = useState<Pair | null>(null)
+  const [showRight, setShowRight] = useState<boolean>(false)
+  const [started, setStarted] = useState<boolean>(false)
+  const [allLoaded, setAllLoaded] = useState<boolean>(false)
 
-const KOCH_START = 4
-const KOCH_WINDOW = 20
-const KOCH_THRESHOLD = 0.85
+  const previousIndex = useRef<number | null>(null)
+  const timerRef = useRef<number | null>(null)
 
-const loadTxtFromPublic = async (path: string): Promise<string> => {
-  const base = process.env.PUBLIC_URL || ''
-  const res = await fetch(`${base}/${path}`)
-  if (!res.ok) throw new Error(`Failed to load ${path}`)
-  return res.text()
-}
-
-const parseTxt = (txt: string): Card[] =>
-  txt
-    .split(/\r?\n/g)
-    .map(line => line.trim())
-    .filter(line => line.length > 0 && !line.startsWith('#'))
-    .map((line, index) => {
-      const parts = line.split('<>')
-      if (parts.length < 2) return null
-      return {
-        id: String(index),
-        cs: parts[0].trim(),
-        other: parts.slice(1).join('<>').trim()
-      }
+  const delay = (ms: number) =>
+    new Promise(resolve => {
+      setTimeout(resolve, ms)
     })
-    .filter((v): v is Card => v !== null)
 
-const Dictionary = () => {
-  const [answers, setAnswers] = useState<boolean[]>([])
-  const [cards, setCards] = useState<Card[]>([])
-  const [current, setCurrent] = useState<Card | null>(null)
-  const [dictionary, setDictionary] = useState<DictionaryLang>('sv')
-  const [direction, setDirection] = useState<Direction>('other-cs')
-  const [intervalSec, setIntervalSec] = useState<number>(3)
-  const [kochIndex, setKochIndex] = useState<number>(KOCH_START)
-  const [showTranslation, setShowTranslation] = useState<boolean>(false)
+  const loadFile = async () => {
+    const res = await fetch('/sv.txt')
+    const txt = await res.text()
 
-  const intervalRef = useRef<number | null>(null)
-  const revealRef = useRef<number | null>(null)
+    const pairs = txt
+      .split(/\r?\n/g)
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .map(line => {
+        const parts = line.split('<>')
+        return {
+          left: parts[0]?.trim() ?? '',
+          right: parts[1]?.trim() ?? ''
+        }
+      })
+      .slice(0, 20)
 
-  const activeCards = useMemo(() => cards.slice(0, kochIndex), [cards, kochIndex])
+    setAllPairs(shuffle(pairs).slice(0, 20))
 
-  const pickRandom = (): Card | null => {
-    if (activeCards.length === 0) return null
-    const index = Math.floor(Math.random() * activeCards.length)
-    return activeCards[index]
+    setInstruction('20 words from file sv.txt uploaded.')
+    await delay(1000)
+    setInstruction('Press button to start learning.')
   }
 
-  const evaluateProgress = (list: boolean[]): boolean => {
-    if (list.length < KOCH_WINDOW) return false
-    const recent = list.slice(-KOCH_WINDOW)
-    const success = recent.filter(a => a).length / KOCH_WINDOW
-    return success >= KOCH_THRESHOLD
-  }
-
-  const nextWord = (): void => {
-    const next = pickRandom()
-    setCurrent(next)
-    setShowTranslation(false)
-
-    if (revealRef.current !== null) {
-      clearTimeout(revealRef.current)
+  const shuffle = (arr: Pair[]): Pair[] => {
+    const copy = [...arr]
+    for (let i = copy.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1))
+      const tmp = copy[i]
+      copy[i] = copy[j]
+      copy[j] = tmp
     }
-
-    revealRef.current = window.setTimeout(() => {
-      setShowTranslation(true)
-    }, (intervalSec * 1000) / 2)
+    return copy
   }
 
-  const applyAnswer = (correct: boolean): void => {
-    const updated = [...answers, correct].slice(-KOCH_WINDOW)
+  const pickRandomPair = (): Pair | null => {
+    if (activePairs.length === 0) return null
 
-    if (evaluateProgress(updated)) {
-      if (kochIndex < cards.length) {
-        setKochIndex(prev => prev + 1)
-        setAnswers([])
-        nextWord()
-        return
+    let index = Math.floor(Math.random() * activePairs.length)
+
+    if (previousIndex.current !== null && activePairs.length > 1) {
+      while (index === previousIndex.current) {
+        index = Math.floor(Math.random() * activePairs.length)
       }
     }
 
-    setAnswers(updated)
-    nextWord()
+    previousIndex.current = index
+    return activePairs[index]
   }
 
-  const switchDictionary = (next: DictionaryLang): void => {
-    if (next === dictionary) {
-      setDirection(prev => (prev === 'other-cs' ? 'cs-other' : 'other-cs'))
+  const startLoop = () => {
+    if (timerRef.current !== null) {
+      clearInterval(timerRef.current)
+    }
+
+    timerRef.current = window.setInterval(() => {
+      const pair = pickRandomPair()
+      if (!pair) return
+
+      setCurrentPair(pair)
+      setShowRight(false)
+
+      setTimeout(() => {
+        setShowRight(true)
+      }, STEP_TIME)
+
+      setTimeout(() => {
+        setCurrentPair(null)
+      }, STEP_TIME * 2)
+    }, STEP_TIME * 2.5)
+  }
+
+  const handleMore = () => {
+    if (!started) {
+      const first = shuffle(allPairs).slice(0, 4)
+      setActivePairs(first)
+      setStarted(true)
+      setInstruction('Learn 4 words from cells.')
+      startLoop()
       return
     }
 
-    if (intervalRef.current !== null) {
-      clearInterval(intervalRef.current)
+    if (activePairs.length >= 20) {
+      setInstruction('All 20 workds upladed, no more extension.')
+      setAllLoaded(true)
+      return
     }
 
-    if (revealRef.current !== null) {
-      clearTimeout(revealRef.current)
-    }
+    const remaining = allPairs.filter(
+      p => !activePairs.includes(p)
+    )
 
-    setDictionary(next)
-    setDirection('other-cs')
-    setKochIndex(KOCH_START)
-    setAnswers([])
-    setCurrent(null)
-    setShowTranslation(false)
+    if (remaining.length === 0) return
+
+    const next = remaining[Math.floor(Math.random() * remaining.length)]
+    const updated = [...activePairs, next]
+    setActivePairs(updated)
+    setInstruction(`Learn ${updated.length} words from cells.`)
+
+    if (updated.length === 20) {
+      setInstruction('All 20 workds upladed, no more extension.')
+      setAllLoaded(true)
+    }
   }
 
   useEffect(() => {
-    const load = async (): Promise<void> => {
-      const txt = await loadTxtFromPublic(DICTIONARY_FILES[dictionary])
-      setCards(parseTxt(txt))
+    const init = async () => {
+      await delay(1000)
+      await loadFile()
     }
 
-    load()
-  }, [dictionary])
-
-  useEffect(() => {
-    if (activeCards.length === 0) return
-
-    const raf = requestAnimationFrame(() => {
-      nextWord()
-    })
-
-    if (intervalRef.current !== null) {
-      clearInterval(intervalRef.current)
-    }
-
-    intervalRef.current = window.setInterval(() => {
-      nextWord()
-    }, intervalSec * 1000)
+    init()
 
     return () => {
-      cancelAnimationFrame(raf)
-
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current)
-      }
-
-      if (revealRef.current !== null) {
-        clearTimeout(revealRef.current)
+      if (timerRef.current !== null) {
+        clearInterval(timerRef.current)
       }
     }
-  }, [activeCards, intervalSec])
-
-  if (current === null) {
-    return <div style={styles.loading}>Loading...</div>
-  }
-
-  const question = direction === 'other-cs' ? current.other : current.cs
-  const translation = direction === 'other-cs' ? current.cs : current.other
+  }, [])
 
   return (
     <div style={styles.container}>
-      <div style={styles.wordBlock}>
-        <div style={styles.word}>{question}</div>
-        <div style={styles.translation}>
-          {showTranslation ? translation : ''}
+      <div style={styles.instruction}>{instruction}</div>
+
+      <div style={styles.cells}>
+        <div style={styles.cell}>
+          {currentPair?.left ?? ''}
+        </div>
+        <div style={styles.cell}>
+          {showRight ? currentPair?.right ?? '' : ''}
         </div>
       </div>
 
-      <div style={styles.buttons}>
-        <button type='button' style={styles.good} onClick={() => applyAnswer(true)}>
-          I knew it
-        </button>
-        <button type='button' style={styles.bad} onClick={() => applyAnswer(false)}>
-          Missed
-        </button>
-      </div>
-
-      <div style={styles.sliderContainer}>
-        <input
-          type='range'
-          min='1'
-          max='4'
-          step='0.5'
-          value={intervalSec}
-          onChange={e => setIntervalSec(Number(e.target.value))}
-          style={styles.slider}
-        />
-        <div style={styles.label}>Speed: {intervalSec}s</div>
-      </div>
-
-      <div style={styles.dbButtons}>
-        <button type='button' onClick={() => switchDictionary('sv')}>
-          SV
-        </button>
-        <button type='button' onClick={() => switchDictionary('sv2')}>
-          SV2
-        </button>
-        <button type='button' onClick={() => switchDictionary('en')}>
-          EN
-        </button>
-      </div>
-
-      <div style={styles.level}>
-        Koch level: {kochIndex} / {cards.length}
-      </div>
+      <button
+        type='button'
+        style={styles.button}
+        onClick={handleMore}
+      >
+        More words
+      </button>
     </div>
   )
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  bad: {
-    padding: '14px 20px',
-    borderRadius: 30,
+  button: {
+    fontSize: 20,
+    padding: '14px 30px',
+    borderRadius: 20,
     border: 'none',
-    backgroundColor: '#a33',
+    backgroundColor: '#000',
     color: '#fff'
   },
-  buttons: {
+  cell: {
+    flex: 1,
+    margin: 10,
+    backgroundColor: '#fff',
+    borderRadius: 20,
     display: 'flex',
-    gap: 12,
-    marginBottom: 30
-  },
-  container: {
-    minHeight: '100vh',
-    backgroundColor: '#ffc0cb',
-    color: '#000',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    textAlign: 'center'
+    justifyContent: 'center',
+    fontSize: 28,
+    fontWeight: 600,
+    color: '#000'
   },
-  dbButtons: {
+  cells: {
     display: 'flex',
-    gap: 8,
-    marginTop: 20
-  },
-  good: {
-    padding: '14px 20px',
-    borderRadius: 30,
-    border: 'none',
-    backgroundColor: '#4a7c59',
-    color: '#fff'
-  },
-  label: {
-    marginTop: 8,
-    fontSize: 14,
-    opacity: 0.6
-  },
-  level: {
-    marginTop: 20,
-    fontSize: 14,
-    opacity: 0.6
-  },
-  loading: {
-    minHeight: '100vh',
-    display: 'flex',
+    width: '100%',
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
   },
-  slider: {
-    width: '100%'
+  container: {
+    height: '100vh',
+    width: '100vw',
+    backgroundColor: '#ffc0cb',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    padding: 20
   },
-  sliderContainer: {
-    width: '100%',
-    maxWidth: 300
-  },
-  translation: {
-    fontSize: 26,
-    opacity: 0.7,
-    marginTop: 12
-  },
-  word: {
-    fontSize: 48,
-    fontWeight: 800
-  },
-  wordBlock: {
-    minHeight: 140,
-    marginBottom: 30
+  instruction: {
+    fontSize: 14,
+    color: '#000',
+    textAlign: 'center'
   }
 }
 
-export default Dictionary
+export default KochTrainer
