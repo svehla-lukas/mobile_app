@@ -192,6 +192,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   cell: {
     flex: 1,
+    height: '80%', 
     margin: 10,
     backgroundColor: '#ffffff',
     border: '2px solid black',
@@ -207,7 +208,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'row',
     width: '100%',
-    height: '40%',
+    height: '50%',
     alignItems: 'center',
     justifyContent: 'center'
   },
