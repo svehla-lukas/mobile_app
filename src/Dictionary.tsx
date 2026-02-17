@@ -207,7 +207,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'row',
     width: '100%',
-    flex: 1,
+    height: '40%',
     alignItems: 'center',
     justifyContent: 'center'
   },
