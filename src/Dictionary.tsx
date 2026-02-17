@@ -217,7 +217,8 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: '#ffc0cb',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    gap: 20,
     padding: 20
   },
   instruction: {
