@@ -212,8 +212,8 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center'
   },
   container: {
-    width: '100vw',
-    height: '100vh',
+    width: '90vw',
+    height: '90vh',
     backgroundColor: '#ffc0cb',
     display: 'flex',
     flexDirection: 'column',
