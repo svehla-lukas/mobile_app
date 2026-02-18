@@ -195,8 +195,8 @@ const styles: Record<string, React.CSSProperties> = {
     height: '95%',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center'
-    gap: 20, 
+    justifyContent: 'center',
+    gap: 20 
   },
   instruction: {
     fontSize: 14,
