@@ -1,6 +1,3 @@
-# Czech <> Swedish – zajímavá a užitečná slovíčka
-# Formát: česky <> švédsky
-
 tillgänglig <> dostupný
 behörig <> příslušný 
 övergripande <> vyčerpávající, úplný
