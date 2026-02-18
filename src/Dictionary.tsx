@@ -7,24 +7,22 @@ type Pair = {
 
 const STEP_TIME = 1000
 
-const KochLandscapeTrainer = () => {
+const KochIphoneLandscape = () => {
   const [instruction, setInstruction] = useState(
     'New words learning based on Koch method.'
   )
-  const [allPairs, setAllPairs] = useState<Pair[]>([])
-  const [activePairs, setActivePairs] = useState<Pair[]>([])
-  const [current, setCurrent] = useState<Pair | null>(null)
+  const [permanentSet, setPermanentSet] = useState<Pair[]>([])
+  const [activeSet, setActiveSet] = useState<Pair[]>([])
+  const [currentPair, setCurrentPair] = useState<Pair | null>(null)
   const [showRight, setShowRight] = useState(false)
   const [ready, setReady] = useState(false)
   const [error, setError] = useState(false)
 
   const previousIndex = useRef<number | null>(null)
-  const loopTimeout = useRef<number | null>(null)
+  const cycleTimeout = useRef<number | null>(null)
 
   const delay = (ms: number) =>
-    new Promise(resolve => {
-      setTimeout(resolve, ms)
-    })
+    new Promise(resolve => setTimeout(resolve, ms))
 
   const shuffle = (arr: Pair[]): Pair[] => {
     const copy = [...arr]
@@ -39,7 +37,7 @@ const KochLandscapeTrainer = () => {
 
   const loadWords = async () => {
     try {
-      const res = await fetch('sv.txt')
+      const res = await fetch('/sv.txt')
       if (!res.ok) throw new Error()
 
       const text = await res.text()
@@ -58,12 +56,10 @@ const KochLandscapeTrainer = () => {
         })
         .filter((p): p is Pair => p !== null)
 
-      if (parsed.length < 20) {
-        throw new Error()
-      }
+      if (parsed.length < 20) throw new Error()
 
       const selected = shuffle(parsed).slice(0, 20)
-      setAllPairs(selected)
+      setPermanentSet(selected)
 
       setInstruction('20 words from file sv.txt uploaded.')
       await delay(1000)
@@ -75,63 +71,67 @@ const KochLandscapeTrainer = () => {
     }
   }
 
-  const pickRandom = (): Pair | null => {
-    if (activePairs.length === 0) return null
+  const pickRandomPair = (): Pair | null => {
+    if (activeSet.length === 0) return null
 
-    let index = Math.floor(Math.random() * activePairs.length)
+    let index = Math.floor(Math.random() * activeSet.length)
 
-    if (previousIndex.current !== null && activePairs.length > 1) {
+    if (previousIndex.current !== null && activeSet.length > 1) {
       while (index === previousIndex.current) {
-        index = Math.floor(Math.random() * activePairs.length)
+        index = Math.floor(Math.random() * activeSet.length)
       }
     }
 
     previousIndex.current = index
-    return activePairs[index]
+    return activeSet[index]
   }
 
-  const showLoop = () => {
-    const pair = pickRandom()
-    if (!pair) return
+  const startCycle = () => {
+    const run = () => {
+      const pair = pickRandomPair()
+      if (!pair) return
 
-    setCurrent(pair)
-    setShowRight(false)
+      setCurrentPair(pair)
+      setShowRight(false)
 
-    setTimeout(() => {
-      setShowRight(true)
-    }, STEP_TIME)
+      setTimeout(() => {
+        setShowRight(true)
+      }, STEP_TIME)
 
-    setTimeout(() => {
-      setCurrent(null)
-    }, STEP_TIME * 2)
+      setTimeout(() => {
+        setCurrentPair(null)
+      }, STEP_TIME * 2)
 
-    loopTimeout.current = window.setTimeout(() => {
-      showLoop()
-    }, STEP_TIME * 2.5)
+      cycleTimeout.current = window.setTimeout(() => {
+        run()
+      }, STEP_TIME * 2.5)
+    }
+
+    run()
   }
 
   const handleMore = () => {
     if (!ready || error) return
 
-    if (activePairs.length === 0) {
-      const first = shuffle(allPairs).slice(0, 4)
-      setActivePairs(first)
+    if (activeSet.length === 0) {
+      const first = shuffle(permanentSet).slice(0, 4)
+      setActiveSet(first)
       setInstruction('Learn 4 words from cells.')
-      showLoop()
+      startCycle()
       return
     }
 
-    if (activePairs.length >= 20) {
+    if (activeSet.length >= 20) {
       setInstruction('All 20 workds upladed, no more extension.')
       return
     }
 
-    const remaining = allPairs.filter(p => !activePairs.includes(p))
+    const remaining = permanentSet.filter(p => !activeSet.includes(p))
     if (remaining.length === 0) return
 
     const next = remaining[Math.floor(Math.random() * remaining.length)]
-    const updated = [...activePairs, next]
-    setActivePairs(updated)
+    const updated = [...activeSet, next]
+    setActiveSet(updated)
 
     if (updated.length === 20) {
       setInstruction('All 20 workds upladed, no more extension.')
@@ -149,84 +149,90 @@ const KochLandscapeTrainer = () => {
     init()
 
     return () => {
-      if (loopTimeout.current !== null) {
-        clearTimeout(loopTimeout.current)
+      if (cycleTimeout.current !== null) {
+        clearTimeout(cycleTimeout.current)
       }
     }
   }, [])
 
   return (
-    <div style={styles.container}>
-      <div style={styles.instruction}>{instruction}</div>
+    <div style={styles.outer}>
+      <div style={styles.app}>
+        <div style={styles.instruction}>{instruction}</div>
 
-      <div style={styles.center}>
-        <div style={styles.cell}>
-          {current?.left ?? ''}
+        <div style={styles.cells}>
+          <div style={styles.cell}>
+            {currentPair?.left ?? ''}
+          </div>
+          <div style={styles.cell}>
+            {showRight ? currentPair?.right ?? '' : ''}
+          </div>
         </div>
-        <div style={styles.cell}>
-          {showRight ? current?.right ?? '' : ''}
-        </div>
+
+        <button
+          type='button'
+          style={styles.button}
+          onClick={handleMore}
+        >
+          More words
+        </button>
       </div>
-
-      <button
-        type='button'
-        style={styles.button}
-        onClick={handleMore}
-      >
-        More words
-      </button>
     </div>
   )
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  button: {
-    alignSelf: 'center',
-    aspectRatio: '3 / 1',
-    padding: '0 24px',
-    fontSize: 20,
-    borderRadius: 16,
-    border: '2px solid black',
-    backgroundColor: '#ffffff',
-    color: '#000000'
+  outer: {
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: '#ffc0cb',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  app: {
+    width: '95%',
+    height: '95%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+  },
+  instruction: {
+    fontSize: 14,
+    color: '#000',
+    textAlign: 'center'
+  },
+  cells: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    height: '45%',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   cell: {
     flex: 1,
-    height: '80%', 
     margin: 10,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
     border: '2px solid black',
     borderRadius: 16,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: 28,
-    fontWeight: 600,
+    fontWeight: 700,
     color: '#000'
   },
-  center: {
-    display: 'flex',
-    flexDirection: 'row',
-    width: '100%',
-    height: '50%',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  container: {
-    width: '90vw',
-    height: '90vh',
-    backgroundColor: '#ffc0cb',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    gap: 5,
-    padding: 20
-  },
-  instruction: {
-    textAlign: 'center',
-    fontSize: 14,
-    color: '#000'
+  button: {
+    alignSelf: 'center',
+    aspectRatio: '3 / 1',
+    padding: '0 24px',
+    backgroundColor: '#000',
+    color: '#fff',
+    border: 'none',
+    borderRadius: 14,
+    fontSize: 18
   }
 }
 
-export default KochLandscapeTrainer
+export default KochIphoneLandscape
