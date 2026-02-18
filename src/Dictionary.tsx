@@ -14,7 +14,8 @@ const KochIphoneLandscape = () => {
   const [permanentSet, setPermanentSet] = useState<Pair[]>([])
   const [activeSet, setActiveSet] = useState<Pair[]>([])
   const [currentPair, setCurrentPair] = useState<Pair | null>(null)
-  const [showRight, setShowRight] = useState(false)
+  const [showSecond, setShowSecond] = useState(false)
+  const [reverse, setReverse] = useState(false)
   const [ready, setReady] = useState(false)
   const [error, setError] = useState(false)
 
@@ -91,10 +92,10 @@ const KochIphoneLandscape = () => {
     if (!pair) return
 
     setCurrentPair(pair)
-    setShowRight(false)
+    setShowSecond(false)
 
     setTimeout(() => {
-      setShowRight(true)
+      setShowSecond(true)
     }, STEP_TIME)
 
     setTimeout(() => {
@@ -135,7 +136,6 @@ const KochIphoneLandscape = () => {
     }
   }
 
-  /* 🔥 OPRAVA: cyklus se spouští až po skutečném nastavení activeSet */
   useEffect(() => {
     if (activeSet.length === 4) {
       runCycle()
@@ -157,6 +157,18 @@ const KochIphoneLandscape = () => {
     }
   }, [])
 
+  const toggleDirection = () => {
+    setReverse(prev => !prev)
+  }
+
+  const firstText = reverse
+    ? currentPair?.right ?? ''
+    : currentPair?.left ?? ''
+
+  const secondText = reverse
+    ? currentPair?.left ?? ''
+    : currentPair?.right ?? ''
+
   return (
     <div style={styles.outer}>
       <div style={styles.app}>
@@ -164,10 +176,10 @@ const KochIphoneLandscape = () => {
 
         <div style={styles.cells}>
           <div style={styles.cell}>
-            {currentPair?.left ?? ''}
+            {currentPair ? firstText : ''}
           </div>
           <div style={styles.cell}>
-            {showRight ? currentPair?.right ?? '' : ''}
+            {currentPair && showSecond ? secondText : ''}
           </div>
         </div>
 
@@ -177,6 +189,14 @@ const KochIphoneLandscape = () => {
           onClick={handleMore}
         >
           More words
+        </button>
+
+        <button
+          type='button'
+          style={styles.switchButton}
+          onClick={toggleDirection}
+        >
+          {reverse ? '<' : '>'}
         </button>
       </div>
     </div>
@@ -190,7 +210,8 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: '#ffc0cb',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    position: 'relative'
   },
   app: {
     width: '95%',
@@ -198,7 +219,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    gap: 20 
+    gap: 20
   },
   instruction: {
     fontSize: 14,
@@ -215,7 +236,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   cell: {
     flex: 1,
-    height: '80%', 
+    height: '80%',
     margin: 10,
     backgroundColor: '#fff',
     border: '2px solid black',
@@ -235,6 +256,18 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#fff',
     border: 'none',
     borderRadius: 14,
+    fontSize: 18
+  },
+  switchButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    width: 40,
+    height: 40,
+    backgroundColor: '#000',
+    color: '#fff',
+    border: 'none',
+    borderRadius: 8,
     fontSize: 18
   }
 }
