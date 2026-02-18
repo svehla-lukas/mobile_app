@@ -30,11 +30,9 @@ const KochIphoneLandscape = () => {
 
   const shuffle = (arr: Pair[]): Pair[] => {
     const copy = [...arr]
-    for (let i = copy.length - 1; i > 0; i -= 1) {
+    for (let i = copy.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
-      const tmp = copy[i]
-      copy[i] = copy[j]
-      copy[j] = tmp
+      ;[copy[i], copy[j]] = [copy[j], copy[i]]
     }
     return copy
   }
@@ -90,7 +88,16 @@ const KochIphoneLandscape = () => {
     return activeSet[index]
   }
 
+  const clearCycle = () => {
+    if (cycleTimeout.current !== null) {
+      clearTimeout(cycleTimeout.current)
+      cycleTimeout.current = null
+    }
+  }
+
   const runCycle = () => {
+    clearCycle()
+
     const pair = pickRandomPair()
     if (!pair) return
 
@@ -99,14 +106,14 @@ const KochIphoneLandscape = () => {
     setShowRight(false)
 
     if (!reverse) {
-      // Normální: levé → pravé
+      // Levé → pravé
       setShowLeft(true)
 
       setTimeout(() => {
         setShowRight(true)
       }, STEP_TIME)
     } else {
-      // Obrácené: pravé → levé
+      // Pravé → levé
       setShowRight(true)
 
       setTimeout(() => {
@@ -161,6 +168,12 @@ const KochIphoneLandscape = () => {
   }, [activeSet])
 
   useEffect(() => {
+    if (activeSet.length >= 4) {
+      runCycle()
+    }
+  }, [reverse]) // 🔥 klíčová oprava
+
+  useEffect(() => {
     const init = async () => {
       await delay(1000)
       await loadWords()
@@ -168,11 +181,7 @@ const KochIphoneLandscape = () => {
 
     init()
 
-    return () => {
-      if (cycleTimeout.current !== null) {
-        clearTimeout(cycleTimeout.current)
-      }
-    }
+    return () => clearCycle()
   }, [])
 
   const toggleDirection = () => {
