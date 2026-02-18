@@ -37,7 +37,7 @@ const KochIphoneLandscape = () => {
 
   const loadWords = async () => {
     try {
-      const res = await fetch('/sv.txt')
+      const res = await fetch('sv.txt')
       if (!res.ok) throw new Error()
 
       const text = await res.text()
@@ -183,8 +183,8 @@ const KochIphoneLandscape = () => {
 
 const styles: Record<string, React.CSSProperties> = {
   outer: {
-    width: '100vw',
-    height: '100vh',
+    width: '97vw',
+    height: '97vh',
     backgroundColor: '#ffc0cb',
     display: 'flex',
     justifyContent: 'center',
@@ -195,7 +195,8 @@ const styles: Record<string, React.CSSProperties> = {
     height: '95%',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between'
+    justifyContent: 'center'
+    gap: 20, 
   },
   instruction: {
     fontSize: 14,
@@ -212,6 +213,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   cell: {
     flex: 1,
+    height: '80%', 
     margin: 10,
     backgroundColor: '#fff',
     border: '2px solid black',
