@@ -14,7 +14,10 @@ const KochIphoneLandscape = () => {
   const [permanentSet, setPermanentSet] = useState<Pair[]>([])
   const [activeSet, setActiveSet] = useState<Pair[]>([])
   const [currentPair, setCurrentPair] = useState<Pair | null>(null)
-  const [showSecond, setShowSecond] = useState(false)
+
+  const [showLeft, setShowLeft] = useState(false)
+  const [showRight, setShowRight] = useState(false)
+
   const [reverse, setReverse] = useState(false)
   const [ready, setReady] = useState(false)
   const [error, setError] = useState(false)
@@ -92,13 +95,28 @@ const KochIphoneLandscape = () => {
     if (!pair) return
 
     setCurrentPair(pair)
-    setShowSecond(false)
+    setShowLeft(false)
+    setShowRight(false)
+
+    if (!reverse) {
+      // Normální: levé → pravé
+      setShowLeft(true)
+
+      setTimeout(() => {
+        setShowRight(true)
+      }, STEP_TIME)
+    } else {
+      // Obrácené: pravé → levé
+      setShowRight(true)
+
+      setTimeout(() => {
+        setShowLeft(true)
+      }, STEP_TIME)
+    }
 
     setTimeout(() => {
-      setShowSecond(true)
-    }, STEP_TIME)
-
-    setTimeout(() => {
+      setShowLeft(false)
+      setShowRight(false)
       setCurrentPair(null)
     }, STEP_TIME * 2)
 
@@ -161,14 +179,6 @@ const KochIphoneLandscape = () => {
     setReverse(prev => !prev)
   }
 
-  const firstText = reverse
-    ? currentPair?.right ?? ''
-    : currentPair?.left ?? ''
-
-  const secondText = reverse
-    ? currentPair?.left ?? ''
-    : currentPair?.right ?? ''
-
   return (
     <div style={styles.outer}>
       <div style={styles.app}>
@@ -176,10 +186,10 @@ const KochIphoneLandscape = () => {
 
         <div style={styles.cells}>
           <div style={styles.cell}>
-            {currentPair ? firstText : ''}
+            {showLeft && currentPair ? currentPair.left : ''}
           </div>
           <div style={styles.cell}>
-            {currentPair && showSecond ? secondText : ''}
+            {showRight && currentPair ? currentPair.right : ''}
           </div>
         </div>
 
