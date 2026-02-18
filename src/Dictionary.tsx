@@ -117,7 +117,6 @@ const KochIphoneLandscape = () => {
       const first = shuffle(permanentSet).slice(0, 4)
       setActiveSet(first)
       setInstruction('Learn 4 words from cells.')
-      startCycle()
       return
     }
 
@@ -146,6 +145,12 @@ const KochIphoneLandscape = () => {
       await loadWords()
     }
 
+  useEffect(() => {
+    if (activeSet.length === 4) {
+      startCycle()
+    }
+  }, [activeSet])
+    
     init()
 
     return () => {
