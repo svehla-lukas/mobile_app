@@ -37,7 +37,7 @@ const KochIphoneLandscape = () => {
 
   const loadWords = async () => {
     try {
-      const res = await fetch('sv.txt')
+      const res = await fetch('/sv.txt')
       if (!res.ok) throw new Error()
 
       const text = await res.text()
@@ -86,28 +86,24 @@ const KochIphoneLandscape = () => {
     return activeSet[index]
   }
 
-  const startCycle = () => {
-    const run = () => {
-      const pair = pickRandomPair()
-      if (!pair) return
+  const runCycle = () => {
+    const pair = pickRandomPair()
+    if (!pair) return
 
-      setCurrentPair(pair)
-      setShowRight(false)
+    setCurrentPair(pair)
+    setShowRight(false)
 
-      setTimeout(() => {
-        setShowRight(true)
-      }, STEP_TIME)
+    setTimeout(() => {
+      setShowRight(true)
+    }, STEP_TIME)
 
-      setTimeout(() => {
-        setCurrentPair(null)
-      }, STEP_TIME * 2)
+    setTimeout(() => {
+      setCurrentPair(null)
+    }, STEP_TIME * 2)
 
-      cycleTimeout.current = window.setTimeout(() => {
-        run()
-      }, STEP_TIME * 2.5)
-    }
-
-    run()
+    cycleTimeout.current = window.setTimeout(() => {
+      runCycle()
+    }, STEP_TIME * 2.5)
   }
 
   const handleMore = () => {
@@ -139,18 +135,19 @@ const KochIphoneLandscape = () => {
     }
   }
 
+  /* 🔥 OPRAVA: cyklus se spouští až po skutečném nastavení activeSet */
+  useEffect(() => {
+    if (activeSet.length === 4) {
+      runCycle()
+    }
+  }, [activeSet])
+
   useEffect(() => {
     const init = async () => {
       await delay(1000)
       await loadWords()
     }
 
-  useEffect(() => {
-    if (activeSet.length === 4) {
-      startCycle()
-    }
-  }, [activeSet])
-    
     init()
 
     return () => {
