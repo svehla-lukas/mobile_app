@@ -127,15 +127,9 @@ const KochIphoneLandscape = () => {
       setCurrentPair(null)
     }, STEP_TIME * 2)
 
-useEffect(() => {
-  if (activeSet.length < 4) return
-
-  const interval = setInterval(() => {
-    runCycle()
-  }, STEP_TIME * 2.5)
-
-  return () => clearInterval(interval)
-}, [activeSet, reverse])
+cycleTimeout.current = window.setTimeout(() => {
+  runCycle()
+}, STEP_TIME * 2.5)
   }
 
   const handleMore = () => {
