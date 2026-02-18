@@ -37,7 +37,7 @@ const KochIphoneLandscape = () => {
 
   const loadWords = async () => {
     try {
-      const res = await fetch('/sv.txt')
+      const res = await fetch('sv.txt')
       if (!res.ok) throw new Error()
 
       const text = await res.text()
