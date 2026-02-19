@@ -23,7 +23,7 @@ konstgjord <> umělý
 bråka <> hádat se
 smärtsam <> bolestivý
 nysa <> kýchnout
-depresivní (hovorově) <> deppig
+deppig <> depresivní
 härledd <> odvozený
 mysigt <> příjemný, útulný
 blyg <> nesmělý
@@ -38,3 +38,4 @@ främja <> podporovat
 riva <> škrábat, strouhat 
 riva <> zničit, strhnout (dům)
 mala <> mlít
+
