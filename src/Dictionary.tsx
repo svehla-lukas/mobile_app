@@ -5,7 +5,7 @@ type Pair = {
   right: string
 }
 
-const STEP_TIME = 1000
+const STEP_TIME = 1500
 
 const KochIphoneLandscape = () => {
   const [instruction, setInstruction] = useState(
